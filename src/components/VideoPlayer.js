@@ -18,6 +18,8 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
     
     // Uloženie do histórie
+    if (!streamData.title) return;
+    
     try {
       const historyData = {
         url: `/watch?v=${streamData.id || new URL(window.location.href).searchParams.get("v")}`,
@@ -71,8 +73,11 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           poster={streamData.thumbnailUrl}
         />
       ) : (
-        <div className={styles.error}>
-          Ľutujeme, pre toto video nebol nájdený vhodný formát (MP4 s audiom).
+        <div className={styles.error} style={{ whiteSpace: "pre-wrap" }}>
+          {streamData.error 
+            ? `Chyba z YouTube:\n${streamData.error}`
+            : "Ľutujeme, pre toto video nebol nájdený vhodný formát (MP4 s audiom)."
+          }
         </div>
       )}
       
