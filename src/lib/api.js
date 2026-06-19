@@ -43,16 +43,26 @@ export async function getPlaylist(playlistId) {
   try {
     const yt = await getYT();
     const playlist = await yt.getPlaylist(playlistId);
-    return (playlist.items || []).map(v => ({
-      id: v.id,
-      url: `/watch?v=${v.id}&list=${playlistId}`,
-      title: v.title?.text || v.title || "Neznámy názov",
-      thumbnail: v.thumbnails?.[0]?.url || "",
-      uploaderName: v.author?.name || "Neznámy autor"
-    }));
+    return {
+      info: {
+        title: playlist.info?.title || "Môj Playlist",
+        author: playlist.info?.author?.name || "MarsTube",
+        thumbnail: playlist.info?.thumbnails?.[0]?.url || "",
+        totalItems: playlist.info?.total_items || playlist.items?.length || 0,
+        id: playlistId
+      },
+      items: (playlist.items || []).map(v => ({
+        id: v.id,
+        url: `/watch?v=${v.id}&list=${playlistId}`,
+        title: v.title?.text || v.title || "Neznámy názov",
+        thumbnail: v.thumbnails?.[0]?.url || "",
+        uploaderName: v.author?.name || "Neznámy autor",
+        duration: v.duration?.text || ""
+      }))
+    };
   } catch (e) {
     console.error("getPlaylist Error:", e);
-    return [];
+    return { info: null, items: [] };
   }
 }
 

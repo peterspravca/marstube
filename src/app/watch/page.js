@@ -17,7 +17,8 @@ export default async function WatchPage({ searchParams }) {
 
   if (listId) {
     const { getPlaylist } = await import("@/lib/api");
-    const playlistItems = await getPlaylist(listId);
+    const playlistResult = await getPlaylist(listId);
+    const playlistItems = playlistResult.items || [];
     const currentIndex = playlistItems.findIndex(item => item.id === videoId);
     
     // Predchádzajúce video
