@@ -183,22 +183,16 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   useEffect(() => {
     if (streamUrl && videoRef.current) {
       const el = videoRef.current;
-      // Try normal autoplay first
-      const playPromise = el.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Browser blocked autoplay with sound - start muted, then unmute
-          el.muted = true;
-          el.play().then(() => {
-            // Unmute after a short delay
-            setTimeout(() => {
-              el.muted = false;
-            }, 100);
-          }).catch(e => {
-            console.warn("Autoplay úplne zablokovaný:", e);
-          });
-        });
-      }
+      // Start muted to guarantee autoplay works (browser policy)
+      el.muted = true;
+      el.play().then(() => {
+        // Unmute shortly after playback starts
+        setTimeout(() => {
+          el.muted = false;
+        }, 300);
+      }).catch(e => {
+        console.warn("Autoplay zablokovaný:", e);
+      });
     }
   }, [streamUrl]);
 
@@ -277,6 +271,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               src={streamUrl}
               controls
               autoPlay
+              muted
               onEnded={handleVideoEnded}
               className={styles.audio}
             />
@@ -287,6 +282,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             src={streamUrl}
             controls
             autoPlay
+            muted
             onEnded={handleVideoEnded}
             className={styles.video}
             poster={streamData.thumbnailUrl}
