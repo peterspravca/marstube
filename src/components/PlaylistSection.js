@@ -498,6 +498,36 @@ export default function PlaylistSection() {
                       <span style={{ fontSize: "1.3rem" }}>▶</span> Prehrať všetko
                     </a>
                   )}
+                  <button
+                    onClick={() => handleRemovePlaylist(activeTab)}
+                    style={{
+                      background: "rgba(255,255,255,0.08)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "white",
+                      padding: "0.8rem 1.5rem",
+                      borderRadius: "30px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                      transition: "all 0.2s ease",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = "rgba(255,70,70,0.15)";
+                      e.currentTarget.style.borderColor = "rgba(255,70,70,0.4)";
+                      e.currentTarget.style.color = "#ff4d4d";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                      e.currentTarget.style.color = "white";
+                    }}
+                  >
+                    ❌ Odstrániť playlist
+                  </button>
                 </div>
               </>
             ) : (
