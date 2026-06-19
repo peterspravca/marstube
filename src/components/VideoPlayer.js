@@ -49,6 +49,12 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   useEffect(() => {
     if (!streamData || !streamData.id) return;
 
+    // Automatický fallback na režim hudby (audio), ak nie je dostupný video stream
+    if (mode === "video" && !streamData.videoUrl && streamData.audioUrl) {
+      setMode("audio");
+      return;
+    }
+
     let active = true;
     const filename = mode === "video" 
       ? `${streamData.id}_video.mp4` 
