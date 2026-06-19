@@ -21,7 +21,7 @@ export const metadata = {
   description: "A premium, ad-free YouTube experience.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.ico",
     apple: "/logo.png",
   },
   appleWebApp: {

@@ -82,66 +82,80 @@ export async function getVideoStream(videoId) {
   try {
     const yt = await getYT();
     
-    const clients = ['IOS', 'ANDROID', 'TV_EMBEDDED', 'WEB'];
-    let info = null;
+    const clients = ['ANDROID', 'IOS', 'WEB'];
+    let basicInfo = null;
+    let videoUrl = null;
+    let audioUrl = null;
+    let chosenVideoClient = null;
+    let chosenAudioClient = null;
     let clientErrorMessage = null;
 
     for (const client of clients) {
       try {
         const tempInfo = await yt.getInfo(videoId, { client });
         if (tempInfo.streaming_data) {
-          info = tempInfo;
-          break;
+          if (!basicInfo) {
+            basicInfo = tempInfo.basic_info;
+          }
+          
+          // 1. Získanie kombinovaného video+audio formátu
+          if (!videoUrl) {
+            try {
+              const format = tempInfo.chooseFormat({ type: 'video+audio', quality: 'best' });
+              if (format) {
+                format.decipher(yt.session.player);
+                videoUrl = format.url;
+                chosenVideoClient = client;
+              }
+            } catch (e) {
+              console.warn(`Could not choose combined format for client ${client}:`, e.message);
+            }
+            if (!videoUrl && tempInfo.streaming_data?.hls_manifest_url) {
+              videoUrl = tempInfo.streaming_data.hls_manifest_url;
+              chosenVideoClient = client;
+            }
+          }
+          
+          // 2. Získanie samostatného audio formátu
+          if (!audioUrl) {
+            try {
+              const audioFormat = tempInfo.chooseFormat({ type: 'audio', quality: 'best' });
+              if (audioFormat) {
+                audioFormat.decipher(yt.session.player);
+                audioUrl = audioFormat.url;
+                chosenAudioClient = client;
+              }
+            } catch (e) {
+              console.warn(`Could not choose audio format for client ${client}:`, e.message);
+            }
+          }
+          
+          // Ak už máme obe adresy, môžeme ukončiť hľadanie
+          if (videoUrl && audioUrl) {
+            break;
+          }
         }
       } catch (e) {
         clientErrorMessage = e.message;
+        console.warn(`Client ${client} failed to get info:`, e.message);
       }
     }
 
-    if (!info) {
+    if (!videoUrl && !audioUrl) {
       throw new Error(clientErrorMessage || "Streaming data not available across all clients.");
-    }
-    
-    let videoUrl = null;
-    let audioUrl = null;
-    let errorMessage = null;
-    
-    // Získanie kombinovaného video+audio formátu
-    try {
-      const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
-      if (format) {
-        format.decipher(yt.session.player);
-        videoUrl = format.url;
-      }
-    } catch (e) {
-      errorMessage = e.message;
-      console.warn("Could not choose combined format:", e.message);
-    }
-
-    if (!videoUrl && info.streaming_data?.hls_manifest_url) {
-      videoUrl = info.streaming_data.hls_manifest_url;
-    }
-
-    // Získanie samostatného audio formátu pre režim "Hudba"
-    try {
-      const audioFormat = info.chooseFormat({ type: 'audio', quality: 'best' });
-      if (audioFormat) {
-        audioFormat.decipher(yt.session.player);
-        audioUrl = audioFormat.url;
-      }
-    } catch (e) {
-      console.warn("Could not choose audio-only format:", e.message);
     }
 
     return {
-      id: info.basic_info.id,
-      title: info.basic_info.title,
-      description: info.basic_info.short_description,
-      thumbnailUrl: info.basic_info.thumbnail?.[0]?.url || "",
+      id: videoId,
+      title: basicInfo?.title || "Neznámy názov",
+      description: basicInfo?.short_description || "",
+      thumbnailUrl: basicInfo?.thumbnail?.[0]?.url || "",
       videoUrl: videoUrl,
       audioUrl: audioUrl,
-      uploader: info.basic_info.channel?.name || info.basic_info.author || "",
-      error: errorMessage || null
+      videoClient: chosenVideoClient || 'WEB',
+      audioClient: chosenAudioClient || 'WEB',
+      uploader: basicInfo?.channel?.name || basicInfo?.author || "",
+      error: !videoUrl && !audioUrl ? (clientErrorMessage || "Nepodarilo sa získať žiadny stream.") : null
     };
   } catch (error) {
     console.error("Error fetching video stream:", error);

@@ -55,13 +55,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       : `${streamData.id}_audio.m4a`;
 
     const sourceUrl = mode === "video" ? streamData.videoUrl : streamData.audioUrl;
-
-    if (!sourceUrl) {
-      setLoadingState("error");
-      setDownloadError("Pre toto video sa nenašiel požadovaný stream.");
-      setStreamUrl("");
-      return;
-    }
+    const sourceClient = mode === "video" ? (streamData.videoClient || "WEB") : (streamData.audioClient || "WEB");
 
     const checkAndDownload = async () => {
       setLoadingState("checking");
@@ -82,11 +76,19 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           return;
         }
 
-        // 2. Ak neexistuje, stiahneme ho zo servera marso.sk na FTP
+        // 2. Ak neexistuje na FTP, musíme mať platný zdrojový stream (sourceUrl) na jeho stiahnutie
+        if (!sourceUrl) {
+          setLoadingState("error");
+          setDownloadError("Pre toto video sa nenašiel požadovaný stream.");
+          setStreamUrl("");
+          return;
+        }
+
+        // 3. Spustíme sťahovanie zo servera marso.sk na FTP s príslušným klientskym UA
         setLoadingState("downloading");
         setDownloadProgress("Pripravujem prehrávanie (sťahujem súbor na server, zvyčajne to trvá 2-5 sekúnd)...");
 
-        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}`);
+        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}`);
         const dlData = await dlRes.json();
 
         if (!active) return;
