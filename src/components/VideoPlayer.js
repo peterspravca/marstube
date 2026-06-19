@@ -277,6 +277,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               ref={setMediaRef}
               src={streamUrl}
               controls
+              autoPlay
+              muted
+              playsInline
               onCanPlay={handleCanPlay}
               onEnded={handleVideoEnded}
               className={styles.audio}
@@ -287,6 +290,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             ref={setMediaRef}
             src={streamUrl}
             controls
+            autoPlay
+            muted
+            playsInline
             onCanPlay={handleCanPlay}
             onEnded={handleVideoEnded}
             className={styles.video}
