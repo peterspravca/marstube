@@ -188,18 +188,39 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
   };
 
-  // Called when browser confirms media is ready to play
+  // Force playback when URL is ready
+  useEffect(() => {
+    if (streamUrl && videoRef.current) {
+      const el = videoRef.current;
+      el.muted = true;
+      // Some browsers need explicit load() when src changes dynamically
+      el.load();
+      
+      const playPromise = el.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          // Unmute shortly after playback starts
+          setTimeout(() => {
+            if (videoRef.current) videoRef.current.muted = false;
+          }, 500);
+        }).catch(e => {
+          console.warn("Autoplay úplne zablokovaný:", e);
+        });
+      }
+    }
+  }, [streamUrl]);
+
+  // Fallback if browser waits for canplay
   const handleCanPlay = () => {
     const el = videoRef.current;
-    if (!el) return;
+    if (!el || !el.paused) return; // already playing
     el.muted = true;
     el.play().then(() => {
-      // Unmute after playback starts
       setTimeout(() => {
         if (videoRef.current) videoRef.current.muted = false;
       }, 500);
     }).catch(e => {
-      console.warn("Autoplay zablokovaný:", e);
+      console.warn("Autoplay zablokovaný na canplay:", e);
     });
   };
 
