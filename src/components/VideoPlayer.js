@@ -201,6 +201,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               style={{ position: 'absolute', top: 0, left: 0 }}
             ></iframe>
           </div>
+          <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
             Upozornenie: Nepodarilo sa prehrať súbor priamo (Chyba: {downloadError || streamData.error || "Neznáma chyba"}). 
             Preto bol načítaný oficiálny YouTube prehrávač.
           </div>
