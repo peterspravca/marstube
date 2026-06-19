@@ -13,9 +13,9 @@ export default async function Home() {
     <main className="container animate-fade-in">
       <header className="home-header">
         <div className="home-logo-title">
-          <img src="/logo.png" alt="MarsTube Logo" style={{ width: "80px", height: "80px", borderRadius: "16px", boxShadow: "var(--shadow-glow)" }} />
+          <img src="/logo.png" alt="MarsoTube Logo" style={{ width: "80px", height: "80px", borderRadius: "16px", boxShadow: "var(--shadow-glow)" }} />
           <h1 className="home-title">
-            <span>Mars<span className="text-gradient">Tube</span></span>
+            <span>Marso<span className="text-gradient">Tube</span></span>
           </h1>
         </div>
         <p className="home-subtitle">

@@ -49,7 +49,7 @@ export default async function WatchPage({ searchParams }) {
       <header className="watch-header">
         <a href="/" className="watch-logo">
           <img src="/logo.png" alt="Logo" style={{ width: "40px", height: "40px", borderRadius: "8px" }} />
-          <span>Mars<span className="text-gradient">Tube</span></span>
+          <span>Marso<span className="text-gradient">Tube</span></span>
         </a>
         <div className="watch-search-wrapper">
           <SearchBar />
