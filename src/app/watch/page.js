@@ -7,6 +7,16 @@ export default async function WatchPage({ searchParams }) {
   const videoId = resolvedParams.v;
   const listId = resolvedParams.list;
   
+  if (!videoId && listId) {
+    const { getPlaylist } = await import("@/lib/api");
+    const playlistResult = await getPlaylist(listId);
+    const playlistItems = playlistResult.items || [];
+    if (playlistItems.length > 0) {
+      const { redirect } = await import("next/navigation");
+      redirect(`/watch?v=${playlistItems[0].id}&list=${listId}`);
+    }
+  }
+  
   let streamData = null;
   let nextVideoUrl = null;
   let prevVideoUrl = null;
