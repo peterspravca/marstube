@@ -180,19 +180,30 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     };
   }, [streamData?.id, mode]);
 
+  // Ref callback to set muted immediately on mount (React muted prop is buggy)
+  const setMediaRef = (el) => {
+    videoRef.current = el;
+    if (el) {
+      el.muted = true;
+    }
+  };
+
   useEffect(() => {
     if (streamUrl && videoRef.current) {
       const el = videoRef.current;
-      // Start muted to guarantee autoplay works (browser policy)
       el.muted = true;
-      el.play().then(() => {
-        // Unmute shortly after playback starts
-        setTimeout(() => {
-          el.muted = false;
-        }, 300);
-      }).catch(e => {
-        console.warn("Autoplay zablokovaný:", e);
-      });
+      // Small delay to ensure src is loaded
+      const timer = setTimeout(() => {
+        el.play().then(() => {
+          // Unmute after playback confirmed
+          setTimeout(() => {
+            el.muted = false;
+          }, 500);
+        }).catch(e => {
+          console.warn("Autoplay zablokovaný:", e);
+        });
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [streamUrl]);
 
@@ -267,22 +278,18 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               </div>
             </div>
             <audio
-              ref={videoRef}
+              ref={setMediaRef}
               src={streamUrl}
               controls
-              autoPlay
-              muted
               onEnded={handleVideoEnded}
               className={styles.audio}
             />
           </div>
         ) : (
           <video
-            ref={videoRef}
+            ref={setMediaRef}
             src={streamUrl}
             controls
-            autoPlay
-            muted
             onEnded={handleVideoEnded}
             className={styles.video}
             poster={streamData.thumbnailUrl}
