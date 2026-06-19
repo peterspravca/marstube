@@ -12,11 +12,14 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: "#7B2CBF",
+};
+
 export const metadata = {
   title: "MarsTube - Ad-Free YouTube",
   description: "A premium, ad-free YouTube experience.",
   manifest: "/manifest.json",
-  themeColor: "#7B2CBF",
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",

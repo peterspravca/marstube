@@ -79,7 +79,7 @@ export default function PlaylistSection() {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-          <h2 style={{ fontSize: "2rem" }}>🎵 Môj Playlist</h2>
+          <h2 style={{ fontSize: "2rem" }}>🎵 Môj Playlist <span style={{fontSize: "1rem", color: "var(--text-secondary)", fontWeight: "normal"}}>({videos.length} skladieb)</span></h2>
           {videos.length > 0 && (
             <a 
               href={videos[0].url} 
@@ -102,7 +102,7 @@ export default function PlaylistSection() {
           gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
           gap: "2rem"
         }}>
-          {videos.slice(0, 12).map((video, idx) => (
+          {videos.map((video, idx) => (
             <VideoCard key={idx} video={video} />
           ))}
         </div>

@@ -62,8 +62,8 @@ export async function getVideoStream(videoId) {
     const info = await yt.getInfo(videoId, { client: 'ANDROID' });
     
     let finalUrl = null;
+    let errorMessage = null;
     
-    // Pokúsime sa získať spojený video+audio formát
     try {
       const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
       if (format) {
@@ -71,25 +71,27 @@ export async function getVideoStream(videoId) {
         finalUrl = format.url;
       }
     } catch (e) {
+      errorMessage = e.message;
       console.warn("Could not choose combined format:", e.message);
     }
 
-    // Fallback na HLS ak nie je MP4
     if (!finalUrl && info.streaming_data?.hls_manifest_url) {
       finalUrl = info.streaming_data.hls_manifest_url;
     }
 
     return {
-      id: videoId,
+      id: info.basic_info.id,
       title: info.basic_info.title,
-      uploader: info.basic_info.author,
-      views: info.basic_info.view_count,
-      thumbnailUrl: info.basic_info.thumbnail?.[0]?.url,
       description: info.basic_info.short_description,
-      streamUrl: finalUrl
+      thumbnailUrl: info.basic_info.thumbnail?.[0]?.url || "",
+      streamUrl: finalUrl,
+      uploader: info.basic_info.channel?.name || info.basic_info.author || "",
+      error: errorMessage || null
     };
-  } catch (e) {
-    console.error("getVideoStream Error:", e);
-    return null;
+  } catch (error) {
+    console.error("Error fetching video stream:", error);
+    return {
+      error: "Zlyhalo pripojenie k YouTube: " + error.message
+    };
   }
 }
