@@ -277,11 +277,55 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       
       <div className={styles.infoBox}>
         <h1 className={styles.title}>{streamData.title}</h1>
-        <div className={styles.meta}>
-          <span className={styles.uploader}>{streamData.uploader}</span>
-          <span className={styles.views}>
-            {streamData.views?.toLocaleString()} zobrazení
-          </span>
+        <div className={styles.meta} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <span className={styles.uploader}>{streamData.uploader}</span>
+            <span className={styles.views}>
+              {streamData.views?.toLocaleString()} zobrazení
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <a 
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                background: 'rgba(255,255,255,0.06)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.1)',
+                transition: 'all 0.2s'
+              }}
+              title="Stiahnuť video súbor (MP4)"
+            >
+              🎥 Stiahnuť Video (MP4)
+            </a>
+            <a 
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.m4a&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                background: 'var(--accent-gradient)',
+                color: 'white',
+                transition: 'all 0.2s',
+                boxShadow: 'var(--shadow-glass)'
+              }}
+              title="Stiahnuť iba hudbu (M4A)"
+            >
+              📥 Stiahnuť Hudbu (M4A)
+            </a>
+          </div>
         </div>
         <div className={styles.description}>
           {streamData.description}

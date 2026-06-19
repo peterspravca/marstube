@@ -55,6 +55,24 @@ if ($action === 'status') {
     exit;
 }
 
+if ($action === 'save') {
+    log_msg("SAVE ACTION: Starting for $filename");
+    if (file_exists($filename) && filesize($filename) > 1000) {
+        log_msg("SAVE ACTION: Subor existuje, zacinam odosielanie...");
+        header("Content-Description: File Transfer");
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate");
+        header("Pragma: public");
+        header("Content-Length: " . filesize($filename));
+        readfile($filename);
+        log_msg("SAVE ACTION: Súbor úspešne odoslaný.");
+        exit;
+    }
+    log_msg("SAVE ACTION: Subor neexistuje, pokracujem stiahnutim...");
+}
+
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 if (empty($url)) {
     http_response_code(400);
@@ -111,11 +129,15 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 120); // 2 minúty limit na stiahnutie
 curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Range: bytes=0-',
-    'Referer: https://www.youtube.com/',
-    'Origin: https://www.youtube.com'
-]);
+$headers = [
+    'Range: bytes=0-'
+];
+if ($client === 'WEB') {
+    $headers[] = 'Referer: https://www.youtube.com/';
+    $headers[] = 'Origin: https://www.youtube.com';
+}
+
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 log_msg("Spúšťam curl_exec...");
 $success = curl_exec($ch);
@@ -127,11 +149,25 @@ fclose($fp);
 
 if ($success && ($http_code === 200 || $http_code === 206)) {
     log_msg("SŤAHOVANIE HOTOVÉ. Veľkosť: " . filesize($filename) . " bajtov.");
-    echo json_encode([
-        "status" => "ready",
-        "url" => "https://marso.sk/play/" . $filename,
-        "size" => filesize($filename)
-    ]);
+    if ($action === 'save') {
+        log_msg("SAVE ACTION: Sťahovanie dokončené, zacinam odosielanie...");
+        header("Content-Description: File Transfer");
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Expires: 0");
+        header("Cache-Control: must-revalidate");
+        header("Pragma: public");
+        header("Content-Length: " . filesize($filename));
+        readfile($filename);
+        log_msg("SAVE ACTION: Súbor úspešne odoslaný.");
+        exit;
+    } else {
+        echo json_encode([
+            "status" => "ready",
+            "url" => "https://marso.sk/play/" . $filename,
+            "size" => filesize($filename)
+        ]);
+    }
 } else {
     $error_body = '';
     if (file_exists($filename)) {
