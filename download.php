@@ -25,6 +25,11 @@ $filename = isset($_GET['filename']) ? $_GET['filename'] : '';
 
 log_msg("=== ZACATOK REQ === Action: $action, Filename: $filename");
 
+if ($action === 'version') {
+    echo json_encode(["version" => "2.0.0", "supported_params" => ["ua"]]);
+    exit;
+}
+
 if (empty($filename)) {
     http_response_code(400);
     echo json_encode(["error" => "Chyba: Chybajuci parameter filename."]);
@@ -39,6 +44,7 @@ if (!preg_match('/^[a-zA-Z0-9_\-\.]+$/', $filename)) {
     log_msg("CHYBA: Neplatny format filename");
     exit;
 }
+
 
 if ($action === 'status') {
     if (file_exists($filename)) {
@@ -185,6 +191,7 @@ if ($success && ($http_code === 200 || $http_code === 206)) {
         "error" => "Stiahnutie zlyhalo",
         "http_code" => $http_code,
         "curl_error" => $error,
+        "used_user_agent" => $user_agent,
         "response_body" => substr($error_body, 0, 1000)
     ]);
 }
