@@ -188,24 +188,20 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
   };
 
-  useEffect(() => {
-    if (streamUrl && videoRef.current) {
-      const el = videoRef.current;
-      el.muted = true;
-      // Small delay to ensure src is loaded
-      const timer = setTimeout(() => {
-        el.play().then(() => {
-          // Unmute after playback confirmed
-          setTimeout(() => {
-            el.muted = false;
-          }, 500);
-        }).catch(e => {
-          console.warn("Autoplay zablokovaný:", e);
-        });
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [streamUrl]);
+  // Called when browser confirms media is ready to play
+  const handleCanPlay = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.muted = true;
+    el.play().then(() => {
+      // Unmute after playback starts
+      setTimeout(() => {
+        if (videoRef.current) videoRef.current.muted = false;
+      }, 500);
+    }).catch(e => {
+      console.warn("Autoplay zablokovaný:", e);
+    });
+  };
 
   const handleVideoEnded = () => {
     if (nextVideoUrl) {
@@ -281,6 +277,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               ref={setMediaRef}
               src={streamUrl}
               controls
+              onCanPlay={handleCanPlay}
               onEnded={handleVideoEnded}
               className={styles.audio}
             />
@@ -290,6 +287,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             ref={setMediaRef}
             src={streamUrl}
             controls
+            onCanPlay={handleCanPlay}
             onEnded={handleVideoEnded}
             className={styles.video}
             poster={streamData.thumbnailUrl}
