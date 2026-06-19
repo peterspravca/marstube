@@ -5,6 +5,8 @@ import styles from "./VideoPlayer.module.css";
 
 import { useRouter } from "next/navigation";
 
+const STORAGE_KEY_FAVORITES = "martubeFavorites";
+
 export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) {
   const videoRef = useRef(null);
   const [streamUrl, setStreamUrl] = useState("");
@@ -12,7 +14,48 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   const [loadingState, setLoadingState] = useState("idle"); // "idle", "checking", "downloading", "ready", "error"
   const [downloadProgress, setDownloadProgress] = useState("");
   const [downloadError, setDownloadError] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
   const router = useRouter();
+
+  // Check if video is in favorites
+  useEffect(() => {
+    if (!streamData?.id) return;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+      if (saved) {
+        const favs = JSON.parse(saved);
+        setIsFavorite(favs.some(f => f.id === streamData.id));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [streamData?.id]);
+
+  const toggleFavorite = () => {
+    if (!streamData?.id) return;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+      let favs = saved ? JSON.parse(saved) : [];
+
+      if (isFavorite) {
+        favs = favs.filter(f => f.id !== streamData.id);
+      } else {
+        favs.unshift({
+          id: streamData.id,
+          url: `/watch?v=${streamData.id}`,
+          title: streamData.title,
+          thumbnail: streamData.thumbnailUrl,
+          uploaderName: streamData.uploader,
+          addedAt: Date.now(),
+        });
+      }
+
+      localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(favs));
+      setIsFavorite(!isFavorite);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Load last play mode from sessionStorage
   useEffect(() => {
@@ -299,7 +342,30 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               {streamData.views?.toLocaleString()} zobrazení
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={toggleFavorite}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                background: isFavorite ? 'rgba(255, 77, 109, 0.15)' : 'rgba(255,255,255,0.06)',
+                color: isFavorite ? '#ff4d6d' : 'white',
+                border: isFavorite ? '1px solid rgba(255, 77, 109, 0.4)' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: 'scale(1)',
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              title={isFavorite ? 'Odstrániť z obľúbených' : 'Pridať do obľúbených'}
+            >
+              {isFavorite ? '❤️ Obľúbené' : '🤍 Obľúbiť'}
+            </button>
             <a 
               href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
               style={{

@@ -31,37 +31,82 @@ function get_mime_type($filename) {
     return 'application/octet-stream';
 }
 
+function download_local_ffmpeg() {
+    $local_ffmpeg = __DIR__ . '/ffmpeg';
+    log_msg("Local FFmpeg missing. Attempting to download static binary...");
+    
+    // Direct link to static Linux amd64 binary of ffmpeg
+    $url = 'https://github.com/blinkot/ffmpeg-static-binaries/releases/download/v6.1.0/linux-x64';
+    
+    $fp = @fopen($local_ffmpeg, 'w+');
+    if ($fp === false) {
+        log_msg("CHYBA: Nepodarilo sa otvorit local ffmpeg pre zapis.");
+        return false;
+    }
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 300); // 5 minutes max
+    $success = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    fclose($fp);
+    
+    if ($success && $http_code === 200) {
+        @chmod($local_ffmpeg, 0755);
+        log_msg("Local FFmpeg downloaded successfully. Chmod 755 set.");
+        return true;
+    } else {
+        log_msg("CHYBA: Stiahnutie local FFmpeg zlyhalo. HTTP kód: $http_code");
+        if (file_exists($local_ffmpeg)) {
+            @unlink($local_ffmpeg);
+        }
+        return false;
+    }
+}
+
+function get_ffmpeg_path() {
+    // 1. Check if ffmpeg is in system path
+    $ffmpeg_out = [];
+    $ffmpeg_ret = -1;
+    @exec('ffmpeg -version', $ffmpeg_out, $ffmpeg_ret);
+    if ($ffmpeg_ret === 0) {
+        return 'ffmpeg';
+    }
+    
+    // 2. Check if local ffmpeg exists
+    $local_ffmpeg = __DIR__ . '/ffmpeg';
+    if (file_exists($local_ffmpeg)) {
+        if (!is_executable($local_ffmpeg)) {
+            @chmod($local_ffmpeg, 0755);
+        }
+        return $local_ffmpeg;
+    }
+    
+    // 3. Try to download it dynamically
+    if (download_local_ffmpeg()) {
+        return $local_ffmpeg;
+    }
+    
+    return null;
+}
+
 $action = isset($_GET['action']) ? $_GET['action'] : 'download';
 $filename = isset($_GET['filename']) ? $_GET['filename'] : '';
 
 log_msg("=== ZACATOK REQ === Action: $action, Filename: $filename");
 
 if ($action === 'version') {
-    $ffmpeg_out = [];
-    $ffmpeg_ret = -1;
-    @exec('which ffmpeg 2>&1', $ffmpeg_out, $ffmpeg_ret);
-    $which_out = implode("\n", $ffmpeg_out);
-    
-    $common_paths = [
-        '/usr/bin/ffmpeg',
-        '/usr/local/bin/ffmpeg',
-        '/opt/local/bin/ffmpeg',
-        '/opt/ffmpeg/bin/ffmpeg',
-        '/usr/bin/ffmpeg.exe'
-    ];
-    $found_paths = [];
-    foreach ($common_paths as $path) {
-        if (@file_exists($path) || @is_executable($path)) {
-            $found_paths[] = $path;
-        }
-    }
-    
+    $ffmpeg_path = get_ffmpeg_path();
     echo json_encode([
-        "version" => "2.2.1-diagnostics",
+        "version" => "2.3.0",
         "supported_params" => ["ua"],
-        "ffmpeg" => ($ffmpeg_ret === 0 || !empty($found_paths)),
-        "which_output" => $which_out,
-        "found_paths" => $found_paths,
+        "ffmpeg" => ($ffmpeg_path !== null),
+        "ffmpeg_path" => $ffmpeg_path,
         "php_os" => PHP_OS,
         "uname" => php_uname()
     ]);
@@ -246,15 +291,21 @@ if ($is_mp3) {
         exit;
     }
 
-    $ffmpeg_cmd = "ffmpeg -y -i " . escapeshellarg($download_target) . " -codec:a libmp3lame -qscale:a 2 " . escapeshellarg($filename) . " 2>&1";
-    log_msg("Spustam prikaz: $ffmpeg_cmd");
+    $ffmpeg_path = get_ffmpeg_path();
+    if ($ffmpeg_path !== null) {
+        $ffmpeg_cmd = escapeshellarg($ffmpeg_path) . " -y -i " . escapeshellarg($download_target) . " -codec:a libmp3lame -qscale:a 2 " . escapeshellarg($filename) . " 2>&1";
+        log_msg("Spustam prikaz: $ffmpeg_cmd");
 
-    $ffmpeg_out = [];
-    $ffmpeg_ret = -1;
-    exec($ffmpeg_cmd, $ffmpeg_out, $ffmpeg_ret);
+        $ffmpeg_out = [];
+        $ffmpeg_ret = -1;
+        exec($ffmpeg_cmd, $ffmpeg_out, $ffmpeg_ret);
 
-    log_msg("FFmpeg vysledok - Navratovy kod: $ffmpeg_ret");
-    log_msg("FFmpeg prve riadky vystupu: " . (isset($ffmpeg_out[0]) ? implode("\n", array_slice($ffmpeg_out, 0, 5)) : 'ziadny vystup'));
+        log_msg("FFmpeg vysledok - Navratovy kod: $ffmpeg_ret");
+        log_msg("FFmpeg prve riadky vystupu: " . (isset($ffmpeg_out[0]) ? implode("\n", array_slice($ffmpeg_out, 0, 5)) : 'ziadny vystup'));
+    } else {
+        log_msg("CHYBA: FFmpeg nebol najdeny a jeho stiahnutie zlyhalo.");
+        $ffmpeg_ret = -1;
+    }
 
     if ($ffmpeg_ret === 0 && file_exists($filename) && filesize($filename) > 1000) {
         log_msg("Konverzia na MP3 bola uspesna. Velkost: " . filesize($filename) . " bajtov.");

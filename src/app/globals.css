@@ -127,9 +127,27 @@ a {
 .playlist-left {
   flex: 1 1 300px;
   position: sticky;
-  top: 100px;
+  top: 20px;
   display: flex;
   flex-direction: column;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+  padding-right: 4px;
+}
+.playlist-left::-webkit-scrollbar {
+  width: 5px;
+}
+.playlist-left::-webkit-scrollbar-track {
+  background: transparent;
+}
+.playlist-left::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+.playlist-left::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
 }
 .playlist-right {
   flex: 3 1 500px;
