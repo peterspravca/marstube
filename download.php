@@ -41,7 +41,7 @@ if ($action === 'version') {
     $ffmpeg_ret = -1;
     @exec('ffmpeg -version', $ffmpeg_out, $ffmpeg_ret);
     echo json_encode([
-        "version" => "2.1.0",
+        "version" => "2.2.0",
         "supported_params" => ["ua"],
         "ffmpeg" => ($ffmpeg_ret === 0),
         "ffmpeg_output" => isset($ffmpeg_out[0]) ? $ffmpeg_out[0] : ''
@@ -80,140 +80,196 @@ if ($action === 'status') {
     exit;
 }
 
-if ($action === 'save') {
-    log_msg("SAVE ACTION: Starting for $filename");
-    if (file_exists($filename) && filesize($filename) > 1000) {
-        log_msg("SAVE ACTION: Subor existuje, zacinam odosielanie...");
-        header("Content-Description: File Transfer");
-        header("Content-Type: " . get_mime_type($filename));
-        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-        header("Access-Control-Expose-Headers: Content-Disposition");
-        header("Expires: 0");
-        header("Cache-Control: must-revalidate");
-        header("Pragma: public");
-        header("Content-Length: " . filesize($filename));
-        readfile($filename);
-        log_msg("SAVE ACTION: Súbor úspešne odoslaný.");
-        exit;
+$is_mp3 = str_ends_with($filename, '.mp3');
+$download_target = $filename;
+if ($is_mp3) {
+    $download_target = str_replace('.mp3', '.m4a', $filename);
+}
+
+// 1. Skontrolujeme, či už výsledný požadovaný súbor existuje na FTP
+if (file_exists($filename)) {
+    if (filesize($filename) > 1000) {
+        log_msg("Súbor $filename existuje a je väčší ako 1000B, preskakujem sťahovanie/konverziu.");
+        if ($action === 'save') {
+            log_msg("SAVE ACTION: Subor existuje, zacinam odosielanie...");
+            header("Content-Description: File Transfer");
+            header("Content-Type: " . get_mime_type($filename));
+            header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+            header("Access-Control-Expose-Headers: Content-Disposition");
+            header("Expires: 0");
+            header("Cache-Control: must-revalidate");
+            header("Pragma: public");
+            header("Content-Length: " . filesize($filename));
+            readfile($filename);
+            log_msg("SAVE ACTION: Súbor úspešne odoslaný.");
+            exit;
+        } else {
+            echo json_encode([
+                "status" => "ready",
+                "url" => "https://marso.sk/play/" . $filename,
+                "size" => filesize($filename)
+            ]);
+            exit;
+        }
+    } else {
+        log_msg("Súbor $filename existuje ale je príliš malý, mažem ho.");
+        unlink($filename);
     }
+}
+
+// 2. Skontrolujeme, či potrebujeme sťahovať zdrojový stream
+$need_download = true;
+if ($is_mp3 && file_exists($download_target) && filesize($download_target) > 1000) {
+    log_msg("Lokalny M4A subor uz existuje ($download_target). Preskakujem stahovanie streamu, prechadzam na konverziu.");
+    $need_download = false;
+}
+
+if ($action === 'save' && !$is_mp3) {
+    // Toto je fallback, keby z nejakého dôvodu zlyhal check pred stiahnutím
     log_msg("SAVE ACTION: Subor neexistuje, pokracujem stiahnutim...");
 }
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
-if (empty($url)) {
+if ($need_download && empty($url)) {
     http_response_code(400);
     echo json_encode(["error" => "Chyba: Chybajuci parameter url."]);
     log_msg("CHYBA: Chyba parameter url");
     exit;
 }
 
-log_msg("URL: " . substr($url, 0, 100) . "...");
+if ($need_download) {
+    log_msg("URL: " . substr($url, 0, 100) . "...");
 
-if (file_exists($filename)) {
-    if (filesize($filename) > 1000) {
-        log_msg("Súbor existuje a je väčší ako 1000B, preskakujem sťahovanie.");
+    // Začatie sťahovania na server do download_target
+    log_msg("Otváram súbor pre zápis: $download_target");
+    $fp = fopen($download_target, 'w+');
+    if ($fp === false) {
+        http_response_code(500);
+        echo json_encode(["error" => "Chyba: Nepodarilo sa otvorit lokalny subor na serveri pre zapis."]);
+        log_msg("CHYBA: fopen zlyhal");
+        exit;
+    }
+
+    $client = isset($_GET['client']) ? strtoupper($_GET['client']) : 'WEB';
+    log_msg("Vybraný klient: $client");
+
+    // Výber správneho User-Agenta podľa parametra alebo fallbacku
+    $user_agent = isset($_GET['ua']) ? $_GET['ua'] : '';
+    if (empty($user_agent)) {
+        $user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+        if ($client === 'ANDROID') {
+            $user_agent = 'com.google.android.youtube/21.03.36(Linux; U; Android 16; en_US; SM-S908E Build/TP1A.220624.014) gzip';
+        } else if ($client === 'IOS') {
+            $user_agent = 'com.google.ios.youtube/20.11.6 (iPhone10,4; U; CPU iOS 16_7_7 like Mac OS X)';
+        }
+    }
+
+    log_msg("Inicializujem CURL s UA: $user_agent");
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 120); // 2 minúty limit na stiahnutie
+    curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+    $headers = [
+        'Range: bytes=0-'
+    ];
+    if ($client === 'WEB') {
+        $headers[] = 'Referer: https://www.youtube.com/';
+        $headers[] = 'Origin: https://www.youtube.com';
+    }
+
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    log_msg("Spúšťam curl_exec...");
+    $success = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = curl_error($ch);
+    log_msg("CURL dokončený. Success: " . ($success ? "Áno" : "Nie") . ", HTTP kód: $http_code, Chyba: $error");
+    curl_close($ch);
+    fclose($fp);
+
+    if ($success && ($http_code === 200 || $http_code === 206)) {
+        log_msg("SŤAHOVANIE HOTOVÉ. Veľkosť: " . filesize($download_target) . " bajtov.");
+    } else {
+        $error_body = '';
+        if (file_exists($download_target)) {
+            $error_body = file_get_contents($download_target);
+            log_msg("Sťahovanie zlyhalo. Mazem lokalny subor. Prvých 200B odpovede: " . substr($error_body, 0, 200));
+            unlink($download_target);
+        } else {
+            log_msg("Sťahovanie zlyhalo. Súbor nebol vytvorený.");
+        }
+        http_response_code(500);
         echo json_encode([
-            "status" => "ready",
-            "url" => "https://marso.sk/play/" . $filename,
-            "size" => filesize($filename)
+            "error" => "Stiahnutie zlyhalo",
+            "http_code" => $http_code,
+            "curl_error" => $error,
+            "used_user_agent" => $user_agent,
+            "target_url" => $url,
+            "response_body" => substr($error_body, 0, 1000)
         ]);
         exit;
-    } else {
-        log_msg("Súbor existuje ale je príliš malý, mažem ho a budem sťahovať znova.");
-        unlink($filename);
     }
 }
 
-// Začatie sťahovania na server
-log_msg("Otváram súbor pre zápis: $filename");
-$fp = fopen($filename, 'w+');
-if ($fp === false) {
-    http_response_code(500);
-    echo json_encode(["error" => "Chyba: Nepodarilo sa otvorit lokalny subor na serveri pre zapis."]);
-    log_msg("CHYBA: fopen zlyhal");
+// 3. Ak je cieľom MP3, vykonáme konverziu pomocou FFmpeg (s fallbackom)
+if ($is_mp3) {
+    log_msg("Spustam konverziu z M4A do MP3...");
+
+    if (!file_exists($download_target) || filesize($download_target) <= 1000) {
+        log_msg("CHYBA: Zdrojovy M4A subor neexistuje alebo je prilis maly pre konverziu.");
+        http_response_code(500);
+        echo json_encode(["error" => "Chyba: Zdrojovy subor pre konverziu neexistuje."]);
+        exit;
+    }
+
+    $ffmpeg_cmd = "ffmpeg -y -i " . escapeshellarg($download_target) . " -codec:a libmp3lame -qscale:a 2 " . escapeshellarg($filename) . " 2>&1";
+    log_msg("Spustam prikaz: $ffmpeg_cmd");
+
+    $ffmpeg_out = [];
+    $ffmpeg_ret = -1;
+    exec($ffmpeg_cmd, $ffmpeg_out, $ffmpeg_ret);
+
+    log_msg("FFmpeg vysledok - Navratovy kod: $ffmpeg_ret");
+    log_msg("FFmpeg prve riadky vystupu: " . (isset($ffmpeg_out[0]) ? implode("\n", array_slice($ffmpeg_out, 0, 5)) : 'ziadny vystup'));
+
+    if ($ffmpeg_ret === 0 && file_exists($filename) && filesize($filename) > 1000) {
+        log_msg("Konverzia na MP3 bola uspesna. Velkost: " . filesize($filename) . " bajtov.");
+    } else {
+        log_msg("FFmpeg zlyhal alebo nevytvoril platny MP3 subor. Pouzivam fallback (kopirovanie M4A na MP3).");
+        if (copy($download_target, $filename)) {
+            log_msg("Fallback uspesny, M4A subor bol skopirovany ako MP3.");
+        } else {
+            log_msg("CHYBA: Fallback kopirovanie zlyhalo.");
+            http_response_code(500);
+            echo json_encode(["error" => "Chyba pri konverzii a kopirovani na MP3."]);
+            exit;
+        }
+    }
+}
+
+// 4. Odoslanie súboru alebo vrátenie statusu ready
+if ($action === 'save') {
+    log_msg("SAVE ACTION: Spustam odosielanie...");
+    header("Content-Description: File Transfer");
+    header("Content-Type: " . get_mime_type($filename));
+    header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+    header("Access-Control-Expose-Headers: Content-Disposition");
+    header("Expires: 0");
+    header("Cache-Control: must-revalidate");
+    header("Pragma: public");
+    header("Content-Length: " . filesize($filename));
+    readfile($filename);
+    log_msg("SAVE ACTION: Súbor úspešne odoslaný.");
     exit;
-}
-
-$client = isset($_GET['client']) ? strtoupper($_GET['client']) : 'WEB';
-log_msg("Vybraný klient: $client");
-
-// Výber správneho User-Agenta podľa parametra alebo fallbacku
-$user_agent = isset($_GET['ua']) ? $_GET['ua'] : '';
-if (empty($user_agent)) {
-    $user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-    if ($client === 'ANDROID') {
-        $user_agent = 'com.google.android.youtube/21.03.36(Linux; U; Android 16; en_US; SM-S908E Build/TP1A.220624.014) gzip';
-    } else if ($client === 'IOS') {
-        $user_agent = 'com.google.ios.youtube/20.11.6 (iPhone10,4; U; CPU iOS 16_7_7 like Mac OS X)';
-    }
-}
-
-log_msg("Inicializujem CURL s UA: $user_agent");
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_FILE, $fp);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 120); // 2 minúty limit na stiahnutie
-curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-$headers = [
-    'Range: bytes=0-'
-];
-if ($client === 'WEB') {
-    $headers[] = 'Referer: https://www.youtube.com/';
-    $headers[] = 'Origin: https://www.youtube.com';
-}
-
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-log_msg("Spúšťam curl_exec...");
-$success = curl_exec($ch);
-$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$error = curl_error($ch);
-log_msg("CURL dokončený. Success: " . ($success ? "Áno" : "Nie") . ", HTTP kód: $http_code, Chyba: $error");
-curl_close($ch);
-fclose($fp);
-
-if ($success && ($http_code === 200 || $http_code === 206)) {
-    log_msg("SŤAHOVANIE HOTOVÉ. Veľkosť: " . filesize($filename) . " bajtov.");
-    if ($action === 'save') {
-        log_msg("SAVE ACTION: Sťahovanie dokončené, zacinam odosielanie...");
-        header("Content-Description: File Transfer");
-        header("Content-Type: " . get_mime_type($filename));
-        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-        header("Access-Control-Expose-Headers: Content-Disposition");
-        header("Expires: 0");
-        header("Cache-Control: must-revalidate");
-        header("Pragma: public");
-        header("Content-Length: " . filesize($filename));
-        readfile($filename);
-        log_msg("SAVE ACTION: Súbor úspešne odoslaný.");
-        exit;
-    } else {
-        echo json_encode([
-            "status" => "ready",
-            "url" => "https://marso.sk/play/" . $filename,
-            "size" => filesize($filename)
-        ]);
-    }
 } else {
-    $error_body = '';
-    if (file_exists($filename)) {
-        $error_body = file_get_contents($filename);
-        log_msg("Sťahovanie zlyhalo. Mazem lokalny subor. Prvých 200B odpovede: " . substr($error_body, 0, 200));
-        unlink($filename);
-    } else {
-        log_msg("Sťahovanie zlyhalo. Súbor nebol vytvorený.");
-    }
-    http_response_code(500);
     echo json_encode([
-        "error" => "Stiahnutie zlyhalo",
-        "http_code" => $http_code,
-        "curl_error" => $error,
-        "used_user_agent" => $user_agent,
-        "target_url" => $url,
-        "response_body" => substr($error_body, 0, 1000)
+        "status" => "ready",
+        "url" => "https://marso.sk/play/" . $filename,
+        "size" => filesize($filename)
     ]);
 }
