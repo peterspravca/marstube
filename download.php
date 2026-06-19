@@ -39,12 +39,31 @@ log_msg("=== ZACATOK REQ === Action: $action, Filename: $filename");
 if ($action === 'version') {
     $ffmpeg_out = [];
     $ffmpeg_ret = -1;
-    @exec('ffmpeg -version', $ffmpeg_out, $ffmpeg_ret);
+    @exec('which ffmpeg 2>&1', $ffmpeg_out, $ffmpeg_ret);
+    $which_out = implode("\n", $ffmpeg_out);
+    
+    $common_paths = [
+        '/usr/bin/ffmpeg',
+        '/usr/local/bin/ffmpeg',
+        '/opt/local/bin/ffmpeg',
+        '/opt/ffmpeg/bin/ffmpeg',
+        '/usr/bin/ffmpeg.exe'
+    ];
+    $found_paths = [];
+    foreach ($common_paths as $path) {
+        if (@file_exists($path) || @is_executable($path)) {
+            $found_paths[] = $path;
+        }
+    }
+    
     echo json_encode([
-        "version" => "2.2.0",
+        "version" => "2.2.1-diagnostics",
         "supported_params" => ["ua"],
-        "ffmpeg" => ($ffmpeg_ret === 0),
-        "ffmpeg_output" => isset($ffmpeg_out[0]) ? $ffmpeg_out[0] : ''
+        "ffmpeg" => ($ffmpeg_ret === 0 || !empty($found_paths)),
+        "which_output" => $which_out,
+        "found_paths" => $found_paths,
+        "php_os" => PHP_OS,
+        "uname" => php_uname()
     ]);
     exit;
 }
