@@ -120,18 +120,61 @@ export default function PlaylistSection() {
               <span>Zoznam • Verejný • {playlistInfo.totalItems} skladieb</span>
             </div>
             
-            {videos.length > 0 && (
-              <a 
-                href={videos[0].url} 
-                style={{ background: "white", color: "black", padding: "1rem", borderRadius: "30px", textAlign: "center", fontWeight: "bold", textDecoration: "none", fontSize: "1.1rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem" }}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+              {videos.length > 0 && (
+                <a 
+                  href={videos[0].url} 
+                  style={{ 
+                    background: "white", 
+                    color: "black", 
+                    padding: "0.8rem 1.5rem", 
+                    borderRadius: "30px", 
+                    textAlign: "center", 
+                    fontWeight: "bold", 
+                    textDecoration: "none", 
+                    fontSize: "1.1rem", 
+                    display: "flex", 
+                    justifyContent: "center", 
+                    alignItems: "center", 
+                    gap: "0.5rem",
+                    transition: "transform 0.2s ease" 
+                  }}
+                  onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <span style={{ fontSize: "1.3rem" }}>▶</span> Prehrať všetko
+                </a>
+              )}
+              
+              <button 
+                onClick={handleReset} 
+                style={{ 
+                  background: "rgba(255,255,255,0.08)", 
+                  border: "1px solid rgba(255,255,255,0.1)", 
+                  color: "white", 
+                  padding: "0.8rem 1.5rem", 
+                  borderRadius: "30px", 
+                  cursor: "pointer", 
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "0.5rem"
+                }}
+                onMouseOver={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }}
+                onMouseOut={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
-                <span style={{ fontSize: "1.3rem" }}>▶</span> Prehrať všetko
-              </a>
-            )}
-            
-            <button onClick={handleReset} style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "white", padding: "1rem", borderRadius: "30px", cursor: "pointer", marginTop: "1rem", fontWeight: "bold" }}>
-              Zmeniť playlist
-            </button>
+                ❌ Zrušiť / Nový playlist
+              </button>
+            </div>
           </>
         ) : (
           <div style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>Načítavam informácie...</div>
