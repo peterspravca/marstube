@@ -20,13 +20,32 @@ function log_msg($msg) {
     file_put_contents('download_log.txt', date('[Y-m-d H:i:s] ') . $msg . "\n", FILE_APPEND);
 }
 
+function get_mime_type($filename) {
+    if (str_ends_with($filename, '.mp4')) {
+        return 'video/mp4';
+    } else if (str_ends_with($filename, '.m4a')) {
+        return 'audio/mp4';
+    } else if (str_ends_with($filename, '.mp3')) {
+        return 'audio/mpeg';
+    }
+    return 'application/octet-stream';
+}
+
 $action = isset($_GET['action']) ? $_GET['action'] : 'download';
 $filename = isset($_GET['filename']) ? $_GET['filename'] : '';
 
 log_msg("=== ZACATOK REQ === Action: $action, Filename: $filename");
 
 if ($action === 'version') {
-    echo json_encode(["version" => "2.0.0", "supported_params" => ["ua"]]);
+    $ffmpeg_out = [];
+    $ffmpeg_ret = -1;
+    @exec('ffmpeg -version', $ffmpeg_out, $ffmpeg_ret);
+    echo json_encode([
+        "version" => "2.1.0",
+        "supported_params" => ["ua"],
+        "ffmpeg" => ($ffmpeg_ret === 0),
+        "ffmpeg_output" => isset($ffmpeg_out[0]) ? $ffmpeg_out[0] : ''
+    ]);
     exit;
 }
 
@@ -66,8 +85,9 @@ if ($action === 'save') {
     if (file_exists($filename) && filesize($filename) > 1000) {
         log_msg("SAVE ACTION: Subor existuje, zacinam odosielanie...");
         header("Content-Description: File Transfer");
-        header("Content-Type: application/octet-stream");
+        header("Content-Type: " . get_mime_type($filename));
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Access-Control-Expose-Headers: Content-Disposition");
         header("Expires: 0");
         header("Cache-Control: must-revalidate");
         header("Pragma: public");
@@ -161,8 +181,9 @@ if ($success && ($http_code === 200 || $http_code === 206)) {
     if ($action === 'save') {
         log_msg("SAVE ACTION: Sťahovanie dokončené, zacinam odosielanie...");
         header("Content-Description: File Transfer");
-        header("Content-Type: application/octet-stream");
+        header("Content-Type: " . get_mime_type($filename));
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+        header("Access-Control-Expose-Headers: Content-Disposition");
         header("Expires: 0");
         header("Cache-Control: must-revalidate");
         header("Pragma: public");
