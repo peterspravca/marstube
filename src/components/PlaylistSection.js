@@ -281,7 +281,7 @@ export default function PlaylistSection() {
 
         {/* Playlist Tabs */}
         {playlists.map((pl) => (
-          <div key={pl.id} style={{ display: "flex", alignItems: "center", gap: "0" }}>
+          <div key={pl.id} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <button
               onClick={() => setActiveTab(pl.id)}
               style={tabStyle(activeTab === pl.id)}
@@ -294,8 +294,30 @@ export default function PlaylistSection() {
                 handleRemovePlaylist(pl.id);
               }}
               style={{
-                ...removeButtonStyle,
-                marginLeft: "-0.3rem",
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "rgba(255,255,255,0.6)",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                padding: "0.4rem 0.55rem",
+                borderRadius: "50%",
+                transition: "all 0.2s",
+                lineHeight: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minWidth: "28px",
+                minHeight: "28px",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "rgba(255,70,70,0.2)";
+                e.currentTarget.style.color = "#ff4d4d";
+                e.currentTarget.style.borderColor = "rgba(255,70,70,0.4)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
               }}
               title="Odstrániť playlist"
             >
