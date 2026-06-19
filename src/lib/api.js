@@ -144,6 +144,12 @@ export async function getVideoStream(videoId) {
         console.warn(`Client ${client} failed to get info:`, e.message);
       }
     }
+    // Fallback: iOS audio formats get blocked (403 Forbidden) on the server,
+    // so we fall back to the working ANDROID/WEB combined format stream which downloads successfully.
+    if (!audioUrl || chosenAudioClient === 'IOS') {
+      audioUrl = videoUrl;
+      chosenAudioClient = chosenVideoClient;
+    }
 
     const webUA = yt.session?.user_agent || CLIENT_USER_AGENTS.WEB;
     const videoUA = chosenVideoClient === 'WEB' ? webUA : CLIENT_USER_AGENTS[chosenVideoClient || 'WEB'];
