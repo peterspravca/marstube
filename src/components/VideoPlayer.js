@@ -299,6 +299,48 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               {streamData.views?.toLocaleString()} zobrazení
             </span>
           </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <a 
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                background: 'rgba(255,255,255,0.06)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.1)',
+                transition: 'all 0.2s'
+              }}
+              title="Stiahnuť video (MP4)"
+            >
+              🎥 Stiahnuť Video (MP4)
+            </a>
+            <a 
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.m4a&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                background: 'var(--accent-gradient)',
+                color: 'white',
+                transition: 'all 0.2s',
+                boxShadow: 'var(--shadow-glass)'
+              }}
+              title="Stiahnuť iba hudbu (M4A)"
+            >
+              📥 Stiahnuť Hudbu (M4A)
+            </a>
+          </div>
         </div>
         <div className={styles.description}>
           {streamData.description}
