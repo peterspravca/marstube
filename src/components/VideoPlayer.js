@@ -257,7 +257,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         mode === "audio" ? (
           <div className={styles.audioPlayerWrapper}>
             <div className={styles.audioPosterWrapper}>
-              <img src="/logo.png" alt="MarsoTube Logo" className={styles.audioPoster} />
+              <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} />
               <div className={styles.musicWave}>
                 <span></span>
                 <span></span>
@@ -292,7 +292,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         mode === "audio" ? (
           <div className={styles.audioPlayerWrapper} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)' }}>
             <div className={styles.audioPosterWrapper}>
-              <img src="/logo.png" alt="MarsoTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
+              <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
               <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem' }}>❌ Nepodarilo sa prehrať audio priamo</div>
                 <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || "Chyba prípravy audio streamu."}</div>

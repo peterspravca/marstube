@@ -64,7 +64,7 @@ export async function getPlaylist(playlistId) {
     return {
       info: {
         title: playlist.info?.title || "Môj Playlist",
-        author: playlist.info?.author?.name || "MarsoTube",
+        author: playlist.info?.author?.name || "MarsTube",
         thumbnail: playlist.info?.thumbnails?.[0]?.url || "",
         totalItems: playlist.info?.total_items || allItems.length || 0,
         id: playlistId

@@ -17,7 +17,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "MarsoTube - Ad-Free YouTube",
+  title: "MarsTube - Ad-Free YouTube",
   description: "A premium, ad-free YouTube experience.",
   manifest: "/manifest.json",
   icons: {
@@ -31,7 +31,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "MarsoTube",
+    title: "MarsTube",
   },
 };
 
