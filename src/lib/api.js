@@ -1,5 +1,11 @@
 import { getYT } from "./youtube";
 
+const CLIENT_USER_AGENTS = {
+  ANDROID: 'com.google.android.youtube/21.03.36(Linux; U; Android 16; en_US; SM-S908E Build/TP1A.220624.014) gzip',
+  IOS: 'com.google.ios.youtube/20.11.6 (iPhone10,4; U; CPU iOS 16_7_7 like Mac OS X)',
+  WEB: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+};
+
 export async function getTrending() {
   try {
     const yt = await getYT();
@@ -139,9 +145,9 @@ export async function getVideoStream(videoId) {
       }
     }
 
-    if (!videoUrl && !audioUrl) {
-      throw new Error(clientErrorMessage || "Streaming data not available across all clients.");
-    }
+    const webUA = yt.session?.user_agent || CLIENT_USER_AGENTS.WEB;
+    const videoUA = chosenVideoClient === 'WEB' ? webUA : CLIENT_USER_AGENTS[chosenVideoClient || 'WEB'];
+    const audioUA = chosenAudioClient === 'WEB' ? webUA : CLIENT_USER_AGENTS[chosenAudioClient || 'WEB'];
 
     return {
       id: videoId,
@@ -152,6 +158,8 @@ export async function getVideoStream(videoId) {
       audioUrl: audioUrl,
       videoClient: chosenVideoClient || 'WEB',
       audioClient: chosenAudioClient || 'WEB',
+      videoUserAgent: videoUA,
+      audioUserAgent: audioUA,
       uploader: basicInfo?.channel?.name || basicInfo?.author || "",
       error: !videoUrl && !audioUrl ? (clientErrorMessage || "Nepodarilo sa získať žiadny stream.") : null
     };

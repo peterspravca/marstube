@@ -83,6 +83,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
     const sourceUrl = mode === "video" ? streamData.videoUrl : streamData.audioUrl;
     const sourceClient = mode === "video" ? (streamData.videoClient || "WEB") : (streamData.audioClient || "WEB");
+    const sourceUA = mode === "video" ? streamData.videoUserAgent : streamData.audioUserAgent;
 
     const checkAndDownload = async () => {
       setLoadingState("checking");
@@ -115,7 +116,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         setLoadingState("downloading");
         setDownloadProgress("Pripravujem prehrávanie (sťahujem súbor na server, zvyčajne to trvá 2-5 sekúnd)...");
 
-        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}`);
+        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}&ua=${encodeURIComponent(sourceUA || '')}`);
         const dlData = await dlRes.json();
 
         if (!active) return;
@@ -286,7 +287,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <a 
-              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}`}
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -306,7 +307,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               🎥 Stiahnuť Video (MP4)
             </a>
             <a 
-              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.m4a&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}`}
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.m4a&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

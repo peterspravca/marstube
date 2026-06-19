@@ -111,12 +111,15 @@ if ($fp === false) {
 $client = isset($_GET['client']) ? strtoupper($_GET['client']) : 'WEB';
 log_msg("Vybraný klient: $client");
 
-// Výber správneho User-Agenta podľa klienta
-$user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-if ($client === 'ANDROID') {
-    $user_agent = 'com.google.android.youtube/19.14.36 (Linux; U; Android 12; en_US)';
-} else if ($client === 'IOS') {
-    $user_agent = 'com.google.ios.youtube/19.14.36 (iPhone; CPU iPhone OS 17_0 like Mac OS X; en_US)';
+// Výber správneho User-Agenta podľa parametra alebo fallbacku
+$user_agent = isset($_GET['ua']) ? $_GET['ua'] : '';
+if (empty($user_agent)) {
+    $user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+    if ($client === 'ANDROID') {
+        $user_agent = 'com.google.android.youtube/21.03.36(Linux; U; Android 16; en_US; SM-S908E Build/TP1A.220624.014) gzip';
+    } else if ($client === 'IOS') {
+        $user_agent = 'com.google.ios.youtube/20.11.6 (iPhone10,4; U; CPU iOS 16_7_7 like Mac OS X)';
+    }
 }
 
 log_msg("Inicializujem CURL s UA: $user_agent");
