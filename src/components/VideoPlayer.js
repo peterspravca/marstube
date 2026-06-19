@@ -182,9 +182,23 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
   useEffect(() => {
     if (streamUrl && videoRef.current) {
-      videoRef.current.play().catch(e => {
-        console.warn("Autoplay bol zablokovaný:", e);
-      });
+      const el = videoRef.current;
+      // Try normal autoplay first
+      const playPromise = el.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Browser blocked autoplay with sound - start muted, then unmute
+          el.muted = true;
+          el.play().then(() => {
+            // Unmute after a short delay
+            setTimeout(() => {
+              el.muted = false;
+            }, 100);
+          }).catch(e => {
+            console.warn("Autoplay úplne zablokovaný:", e);
+          });
+        });
+      }
     }
   }, [streamUrl]);
 
