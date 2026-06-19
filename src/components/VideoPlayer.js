@@ -386,26 +386,6 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             >
               🎥 Stiahnuť Video (MP4)
             </a>
-            <a 
-              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '0.5rem 1rem',
-                borderRadius: '16px',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-                textDecoration: 'none',
-                background: 'var(--accent-gradient)',
-                color: 'white',
-                transition: 'all 0.2s',
-                boxShadow: 'var(--shadow-glass)'
-              }}
-              title="Stiahnuť hudbu (MP3)"
-            >
-              📥 Stiahnuť Hudbu (MP3)
-            </a>
           </div>
         </div>
         <div className={styles.description}>
