@@ -8,11 +8,32 @@ import { useRouter } from "next/navigation";
 export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) {
   const videoRef = useRef(null);
   const [streamUrl, setStreamUrl] = useState("");
-  const [mode, setMode] = useState("video"); // "video" alebo "audio"
+  const [mode, setMode] = useState(null); // null, "video" alebo "audio"
   const [loadingState, setLoadingState] = useState("idle"); // "idle", "checking", "downloading", "ready", "error"
   const [downloadProgress, setDownloadProgress] = useState("");
   const [downloadError, setDownloadError] = useState("");
   const router = useRouter();
+
+  // Načítanie uloženej voľby režimu pri načítaní komponentu
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("martubePlayMode");
+      if (saved === "video" || saved === "audio") {
+        setMode(saved);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const changeMode = (newMode) => {
+    setMode(newMode);
+    try {
+      sessionStorage.setItem("martubePlayMode", newMode);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     if (!streamData) return;
@@ -47,11 +68,11 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
   // Sťahovanie/Kontrola stavu na FTP pri zmene videa alebo prepnutí režimu (Video/Hudba)
   useEffect(() => {
-    if (!streamData || !streamData.id) return;
+    if (!streamData || !streamData.id || !mode) return;
 
     // Automatický fallback na režim hudby (audio), ak nie je dostupný video stream
     if (mode === "video" && !streamData.videoUrl && streamData.audioUrl) {
-      setMode("audio");
+      changeMode("audio");
       return;
     }
 
@@ -142,7 +163,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       {/* Tlačidlá prepínania Video / Hudba */}
       <div style={{ display: 'flex', gap: '12px', marginBottom: '0.5rem' }}>
         <button 
-          onClick={() => setMode("video")}
+          onClick={() => changeMode("video")}
           style={{
             padding: '0.7rem 1.4rem',
             borderRadius: '24px',
@@ -160,7 +181,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           🎥 Video
         </button>
         <button 
-          onClick={() => setMode("audio")}
+          onClick={() => changeMode("audio")}
           style={{
             padding: '0.7rem 1.4rem',
             borderRadius: '24px',
@@ -179,7 +200,22 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         </button>
       </div>
 
-      {loadingState === "checking" || loadingState === "downloading" ? (
+      {!mode ? (
+        <div className={styles.choiceOverlay}>
+          <div className={styles.choiceCard}>
+            <h2>Ako chcete prehrať toto video?</h2>
+            <p>{streamData.title}</p>
+            <div className={styles.choiceButtons}>
+              <button onClick={() => changeMode("video")} className={styles.choiceBtnVideo}>
+                🎥 Prehrať Video
+              </button>
+              <button onClick={() => changeMode("audio")} className={styles.choiceBtnAudio}>
+                🎵 Iba Hudbu (Audio)
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : loadingState === "checking" || loadingState === "downloading" ? (
         <div className={styles.loadingMedia}>
           <div className={styles.spinner}></div>
           <div style={{ marginTop: '1.5rem', fontWeight: '500', textAlign: 'center', maxWidth: '80%' }}>
