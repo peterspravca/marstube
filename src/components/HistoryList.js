@@ -10,7 +10,20 @@ export default function HistoryList() {
     try {
       const saved = localStorage.getItem("martubeHistory");
       if (saved) {
-        setHistory(JSON.parse(saved));
+        let parsed = JSON.parse(saved);
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+        
+        // Filter out items without title or older than 30 days
+        parsed = parsed.filter(item => {
+          if (!item || !item.title) return false;
+          if (item.timestamp && (now - item.timestamp > thirtyDaysMs)) return false;
+          return true;
+        });
+        
+        setHistory(parsed);
+        // Clean up localStorage
+        localStorage.setItem("martubeHistory", JSON.stringify(parsed));
       }
     } catch (e) {
       console.error("Nepodarilo sa načítať históriu", e);

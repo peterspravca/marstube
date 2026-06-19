@@ -26,6 +26,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         title: streamData.title,
         thumbnail: streamData.thumbnailUrl,
         uploaderName: streamData.uploader,
+        timestamp: Date.now()
       };
       
       const saved = localStorage.getItem("martubeHistory");
