@@ -8,11 +8,32 @@ import { useRouter } from "next/navigation";
 export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) {
   const videoRef = useRef(null);
   const [streamUrl, setStreamUrl] = useState("");
-  const mode = "audio";
+  const [mode, setMode] = useState("audio"); // Default to audio mode as preferred
   const [loadingState, setLoadingState] = useState("idle"); // "idle", "checking", "downloading", "ready", "error"
   const [downloadProgress, setDownloadProgress] = useState("");
   const [downloadError, setDownloadError] = useState("");
   const router = useRouter();
+
+  // Load last play mode from sessionStorage
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("martubePlayMode");
+      if (saved === "video" || saved === "audio") {
+        setMode(saved);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const changeMode = (newMode) => {
+    setMode(newMode);
+    try {
+      sessionStorage.setItem("martubePlayMode", newMode);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     if (!streamData) return;
@@ -45,15 +66,18 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
   }, [streamData]);
 
-  // Sťahovanie/Kontrola stavu na FTP pri zmene videa
+  // Sťahovanie/Kontrola stavu na FTP pri zmene videa alebo prepnutí režimu
   useEffect(() => {
-    if (!streamData || !streamData.id) return;
+    if (!streamData || !streamData.id || !mode) return;
 
     let active = true;
-    const filename = `${streamData.id}_audio.m4a`;
-    const sourceUrl = streamData.audioUrl;
-    const sourceClient = streamData.audioClient || "WEB";
-    const sourceUA = streamData.audioUserAgent;
+    const filename = mode === "video" 
+      ? `${streamData.id}_video.mp4` 
+      : `${streamData.id}_audio.m4a`;
+
+    const sourceUrl = mode === "video" ? streamData.videoUrl : streamData.audioUrl;
+    const sourceClient = mode === "video" ? (streamData.videoClient || "WEB") : (streamData.audioClient || "WEB");
+    const sourceUA = mode === "video" ? streamData.videoUserAgent : streamData.audioUserAgent;
 
     const checkAndDownload = async () => {
       setLoadingState("checking");
@@ -111,7 +135,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     return () => {
       active = false;
     };
-  }, [streamData?.id]);
+  }, [streamData?.id, mode]);
 
   useEffect(() => {
     if (streamUrl && videoRef.current) {
@@ -131,6 +155,46 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
   return (
     <div className={styles.playerContainer}>
+      {/* Tlačidlá prepínania Video / Hudba */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '0.5rem' }}>
+        <button 
+          onClick={() => changeMode("video")}
+          style={{
+            padding: '0.7rem 1.4rem',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            background: mode === 'video' ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.08)',
+            color: 'white',
+            boxShadow: mode === 'video' ? 'var(--shadow-glass)' : 'none',
+            border: '1px solid rgba(255,255,255,0.1)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          🎥 Video
+        </button>
+        <button 
+          onClick={() => changeMode("audio")}
+          style={{
+            padding: '0.7rem 1.4rem',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            background: mode === 'audio' ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.08)',
+            color: 'white',
+            boxShadow: mode === 'audio' ? 'var(--shadow-glass)' : 'none',
+            border: '1px solid rgba(255,255,255,0.1)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          🎵 Hudba
+        </button>
+      </div>
+
       {loadingState === "checking" || loadingState === "downloading" ? (
         <div className={styles.loadingMedia}>
           <div className={styles.spinner}></div>
@@ -139,36 +203,68 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           </div>
         </div>
       ) : streamUrl ? (
-        <div className={styles.audioPlayerWrapper}>
-          <div className={styles.audioPosterWrapper}>
-            <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} />
-            <div className={styles.musicWave}>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
+        mode === "audio" ? (
+          <div className={styles.audioPlayerWrapper}>
+            <div className={styles.audioPosterWrapper}>
+              <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} />
+              <div className={styles.musicWave}>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
+            <audio
+              ref={videoRef}
+              src={streamUrl}
+              controls
+              autoPlay
+              onEnded={handleVideoEnded}
+              className={styles.audio}
+            />
           </div>
-          <audio
+        ) : (
+          <video
             ref={videoRef}
             src={streamUrl}
             controls
             autoPlay
             onEnded={handleVideoEnded}
-            className={styles.audio}
+            className={styles.video}
+            poster={streamData.thumbnailUrl}
           />
-        </div>
+        )
       ) : (
-        <div className={styles.audioPlayerWrapper} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)' }}>
-          <div className={styles.audioPosterWrapper}>
-            <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
-            <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
-              <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem' }}>❌ Nepodarilo sa prehrať audio priamo</div>
-              <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || "Chyba prípravy audio streamu."}</div>
+        mode === "audio" ? (
+          <div className={styles.audioPlayerWrapper} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)' }}>
+            <div className={styles.audioPosterWrapper}>
+              <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
+              <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem' }}>❌ Nepodarilo sa prehrať audio priamo</div>
+                <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || "Chyba prípravy audio streamu."}</div>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden' }}>
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube-nocookie.com/embed/${streamData.id}?autoplay=1`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ position: 'absolute', top: 0, left: 0 }}
+              ></iframe>
+            </div>
+            <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
+              Upozornenie: Nepodarilo sa prehrať súbor priamo (Chyba: {downloadError || streamData.error || "Neznáma chyba"}). 
+              Preto bol načítaný oficiálny YouTube prehrávač.
+            </div>
+          </div>
+        )
       )}
       
       {/* Ovládacie prvky pre Playlist */}
