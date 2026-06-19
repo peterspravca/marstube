@@ -295,3 +295,92 @@
     font-size: 0.9rem;
   }
 }
+
+.audioPlayerWrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  background: radial-gradient(circle at center, rgba(123, 44, 191, 0.15) 0%, rgba(10, 10, 12, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+  overflow: hidden;
+}
+
+.audioPosterWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.audioPoster {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(123, 44, 191, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(123, 44, 191, 0.3); }
+  50% { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 50px rgba(123, 44, 191, 0.5); }
+}
+
+.audio {
+  width: 80%;
+  max-width: 600px;
+  height: 40px;
+  border-radius: 30px;
+  outline: none;
+}
+
+/* Music Wave animation */
+.musicWave {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 30px;
+  margin-top: 0.5rem;
+}
+
+.musicWave span {
+  display: block;
+  width: 4px;
+  background: var(--accent-gradient);
+  border-radius: 2px;
+  animation: wave 1.2s ease-in-out infinite alternate;
+}
+
+.musicWave span:nth-child(1) { height: 10px; }
+.musicWave span:nth-child(2) { animation-delay: 0.2s; height: 15px; }
+.musicWave span:nth-child(3) { animation-delay: 0.4s; height: 25px; }
+.musicWave span:nth-child(4) { animation-delay: 0.1s; height: 10px; }
+.musicWave span:nth-child(5) { animation-delay: 0.3s; height: 20px; }
+
+@keyframes wave {
+  0% { height: 5px; }
+  100% { height: 28px; }
+}
+
+@media (max-width: 768px) {
+  .audioPlayerWrapper {
+    aspect-ratio: auto;
+    padding: 2.5rem 1.5rem;
+  }
+  .audioPoster {
+    width: 140px;
+    height: 140px;
+  }
+  .audio {
+    width: 100%;
+  }
+}

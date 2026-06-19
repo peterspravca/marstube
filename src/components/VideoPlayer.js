@@ -224,15 +224,38 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           </div>
         </div>
       ) : streamUrl ? (
-        <video
-          ref={videoRef}
-          src={streamUrl}
-          controls
-          autoPlay
-          onEnded={handleVideoEnded}
-          className={styles.video}
-          poster={streamData.thumbnailUrl}
-        />
+        mode === "audio" ? (
+          <div className={styles.audioPlayerWrapper}>
+            <div className={styles.audioPosterWrapper}>
+              <img src={streamData.thumbnailUrl} alt="Album Cover" className={styles.audioPoster} />
+              <div className={styles.musicWave}>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <audio
+              ref={videoRef}
+              src={streamUrl}
+              controls
+              autoPlay
+              onEnded={handleVideoEnded}
+              className={styles.audio}
+            />
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            src={streamUrl}
+            controls
+            autoPlay
+            onEnded={handleVideoEnded}
+            className={styles.video}
+            poster={streamData.thumbnailUrl}
+          />
+        )
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden' }}>
