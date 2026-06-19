@@ -103,8 +103,7 @@ export async function getVideoStream(videoId) {
             try {
               const format = tempInfo.chooseFormat({ type: 'video+audio', quality: 'best' });
               if (format) {
-                format.decipher(yt.session.player);
-                videoUrl = format.url;
+                videoUrl = await format.decipher(yt.session.player);
                 chosenVideoClient = client;
               }
             } catch (e) {
@@ -121,8 +120,7 @@ export async function getVideoStream(videoId) {
             try {
               const audioFormat = tempInfo.chooseFormat({ type: 'audio', quality: 'best' });
               if (audioFormat) {
-                audioFormat.decipher(yt.session.player);
-                audioUrl = audioFormat.url;
+                audioUrl = await audioFormat.decipher(yt.session.player);
                 chosenAudioClient = client;
               }
             } catch (e) {
