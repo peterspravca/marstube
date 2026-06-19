@@ -192,6 +192,7 @@ if ($success && ($http_code === 200 || $http_code === 206)) {
         "http_code" => $http_code,
         "curl_error" => $error,
         "used_user_agent" => $user_agent,
+        "target_url" => $url,
         "response_body" => substr($error_body, 0, 1000)
     ]);
 }
