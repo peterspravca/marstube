@@ -1,0 +1,60 @@
+import SearchBar from "@/components/SearchBar";
+import VideoCard from "@/components/VideoCard";
+import HistoryList from "@/components/HistoryList";
+import PlaylistSection from "@/components/PlaylistSection";
+import { getTrending } from "@/lib/api";
+
+export const revalidate = 3600;
+
+export default async function Home() {
+  const trendingVideos = await getTrending();
+
+  return (
+    <main className="container animate-fade-in">
+      <header style={{ textAlign: "center", margin: "4rem 0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
+          <img src="/logo.png" alt="MarsTube Logo" style={{ width: "80px", height: "80px", borderRadius: "16px", boxShadow: "var(--shadow-glow)" }} />
+          <h1 style={{ fontSize: "4rem" }}>
+            <span>Mars<span className="text-gradient">Tube</span></span>
+          </h1>
+        </div>
+        <p style={{ color: "var(--text-secondary)", fontSize: "1.2rem", maxWidth: "600px", margin: "0 auto", marginBottom: "3rem" }}>
+          Bez reklám, bez prerušení. Váš osobný, prémiový zážitok.
+        </p>
+        
+        <SearchBar />
+      </header>
+      
+      {/* Sekcia: Vlastný Playlist používateľa */}
+      <section style={{ marginTop: "4rem" }}>
+        <PlaylistSection />
+      </section>
+
+      {/* Sekcia: História */}
+      <section style={{ marginTop: "4rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>🕒 História sledovania</h2>
+        <HistoryList />
+      </section>
+      
+      {/* Sekcia: Trendy */}
+      <section style={{ marginTop: "4rem", marginBottom: "4rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>🔥 Trendy</h2>
+        {trendingVideos && trendingVideos.length > 0 ? (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "2rem"
+          }}>
+            {trendingVideos.map((video, idx) => (
+              <VideoCard key={idx} video={video} />
+            ))}
+          </div>
+        ) : (
+          <div className="glass-panel" style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+            Momentálne nie sú dostupné žiadne trendy.
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}

@@ -1,0 +1,59 @@
+import VideoPlayer from "@/components/VideoPlayer";
+import SearchBar from "@/components/SearchBar";
+import { getVideoStream } from "@/lib/api";
+
+export default async function WatchPage({ searchParams }) {
+  const resolvedParams = await searchParams;
+  const videoId = resolvedParams.v;
+  const listId = resolvedParams.list;
+  
+  let streamData = null;
+  let nextVideoUrl = null;
+  let prevVideoUrl = null;
+  
+  if (videoId) {
+    streamData = await getVideoStream(videoId);
+  }
+
+  if (listId) {
+    const { getPlaylist } = await import("@/lib/api");
+    const playlistItems = await getPlaylist(listId);
+    const currentIndex = playlistItems.findIndex(item => item.id === videoId);
+    
+    // Predchádzajúce video
+    if (currentIndex > 0) {
+      const prevId = playlistItems[currentIndex - 1].id;
+      prevVideoUrl = `/watch?v=${prevId}&list=${listId}`;
+    }
+    
+    // Nasledujúce video
+    if (currentIndex >= 0 && currentIndex < playlistItems.length - 1) {
+      const nextId = playlistItems[currentIndex + 1].id;
+      nextVideoUrl = `/watch?v=${nextId}&list=${listId}`;
+    }
+  }
+
+  return (
+    <main className="container animate-fade-in">
+      <header style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "1.5rem", fontWeight: "bold", fontFamily: "var(--font-outfit)" }}>
+          <img src="/logo.png" alt="Logo" style={{ width: "40px", height: "40px", borderRadius: "8px" }} />
+          <span>Mars<span className="text-gradient">Tube</span></span>
+        </a>
+        <div style={{ flex: "0 1 500px" }}>
+          <SearchBar />
+        </div>
+      </header>
+      
+      <section>
+        {streamData ? (
+          <VideoPlayer streamData={streamData} nextVideoUrl={nextVideoUrl} prevVideoUrl={prevVideoUrl} />
+        ) : (
+          <div className="glass-panel" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
+            Nepodarilo sa načítať video. Skontrolujte URL alebo skúste iné video.
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
