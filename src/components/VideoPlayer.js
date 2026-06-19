@@ -74,11 +74,22 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           poster={streamData.thumbnailUrl}
         />
       ) : (
-        <div className={styles.error} style={{ whiteSpace: "pre-wrap" }}>
-          {streamData.error 
-            ? `Chyba z YouTube:\n${streamData.error}`
-            : "Ľutujeme, pre toto video nebol nájdený vhodný formát (MP4 s audiom)."
-          }
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden' }}>
+            <iframe
+              width="100%"
+              height="100%"
+              src={`https://www.youtube-nocookie.com/embed/${streamData.id}?autoplay=1`}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: 'absolute', top: 0, left: 0 }}
+            ></iframe>
+          </div>
+          <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
+            Upozornenie: Toto video je na serveroch blokované (Chyba: {streamData.error}). 
+            Preto bol načítaný oficiálny YouTube prehrávač.
+          </div>
         </div>
       )}
       

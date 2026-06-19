@@ -42,16 +42,28 @@ export async function searchVideos(query) {
 export async function getPlaylist(playlistId) {
   try {
     const yt = await getYT();
-    const playlist = await yt.getPlaylist(playlistId);
+    let playlist = await yt.getPlaylist(playlistId);
+    let allItems = playlist.items || [];
+    
+    // Načítaj všetky stránky playlistu, až do 1500 videí (limit pre extrémne veľké playlisty)
+    let safetyCounter = 0;
+    while (playlist.has_continuation && allItems.length < 1500 && safetyCounter < 20) {
+      safetyCounter++;
+      playlist = await playlist.getContinuation();
+      if (playlist.items) {
+        allItems = allItems.concat(playlist.items);
+      }
+    }
+
     return {
       info: {
         title: playlist.info?.title || "Môj Playlist",
         author: playlist.info?.author?.name || "MarsTube",
         thumbnail: playlist.info?.thumbnails?.[0]?.url || "",
-        totalItems: playlist.info?.total_items || playlist.items?.length || 0,
+        totalItems: playlist.info?.total_items || allItems.length || 0,
         id: playlistId
       },
-      items: (playlist.items || []).map(v => ({
+      items: allItems.map(v => ({
         id: v.id,
         url: `/watch?v=${v.id}&list=${playlistId}`,
         title: v.title?.text || v.title || "Neznámy názov",
@@ -120,6 +132,7 @@ export async function getVideoStream(videoId) {
   } catch (error) {
     console.error("Error fetching video stream:", error);
     return {
+      id: videoId,
       error: "Zlyhalo pripojenie k YouTube: " + error.message
     };
   }
