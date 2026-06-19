@@ -73,3 +73,135 @@ a {
 .animate-fade-in {
   animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Responsive Utilities & Layouts */
+.home-header {
+  text-align: center;
+  margin: 4rem 0;
+}
+.home-logo-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.home-title {
+  font-size: 4rem;
+}
+.home-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+}
+
+/* Watch Page Header */
+.watch-header {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+.watch-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: var(--font-outfit);
+}
+.watch-search-wrapper {
+  flex: 0 1 500px;
+  width: 100%;
+}
+
+/* Playlist Layout */
+.playlist-container {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.playlist-left {
+  flex: 1 1 300px;
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+}
+.playlist-right {
+  flex: 3 1 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+}
+.playlist-input-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .home-header {
+    margin: 2rem 0;
+  }
+  .home-logo-title {
+    gap: 0.5rem;
+  }
+  .home-title {
+    font-size: 2.5rem;
+  }
+  .home-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .watch-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .watch-logo {
+    justify-content: center;
+  }
+  .watch-search-wrapper {
+    flex: none;
+    width: 100%;
+  }
+
+  .playlist-left {
+    position: static;
+    flex: 1 1 100%;
+    margin-bottom: 1.5rem;
+  }
+  .playlist-right {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .playlist-input-wrapper {
+    flex-direction: column;
+  }
+}
+
+.playlist-input-card {
+  padding: 3rem;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .playlist-input-card {
+    padding: 1.5rem 1rem;
+  }
+}

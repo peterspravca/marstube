@@ -102,22 +102,35 @@ export async function getVideoStream(videoId) {
       throw new Error(clientErrorMessage || "Streaming data not available across all clients.");
     }
     
-    let finalUrl = null;
+    let videoUrl = null;
+    let audioUrl = null;
     let errorMessage = null;
     
+    // Získanie kombinovaného video+audio formátu
     try {
       const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
       if (format) {
         format.decipher(yt.session.player);
-        finalUrl = format.url;
+        videoUrl = format.url;
       }
     } catch (e) {
       errorMessage = e.message;
       console.warn("Could not choose combined format:", e.message);
     }
 
-    if (!finalUrl && info.streaming_data?.hls_manifest_url) {
-      finalUrl = info.streaming_data.hls_manifest_url;
+    if (!videoUrl && info.streaming_data?.hls_manifest_url) {
+      videoUrl = info.streaming_data.hls_manifest_url;
+    }
+
+    // Získanie samostatného audio formátu pre režim "Hudba"
+    try {
+      const audioFormat = info.chooseFormat({ type: 'audio', quality: 'best' });
+      if (audioFormat) {
+        audioFormat.decipher(yt.session.player);
+        audioUrl = audioFormat.url;
+      }
+    } catch (e) {
+      console.warn("Could not choose audio-only format:", e.message);
     }
 
     return {
@@ -125,7 +138,8 @@ export async function getVideoStream(videoId) {
       title: info.basic_info.title,
       description: info.basic_info.short_description,
       thumbnailUrl: info.basic_info.thumbnail?.[0]?.url || "",
-      streamUrl: finalUrl,
+      videoUrl: videoUrl,
+      audioUrl: audioUrl,
       uploader: info.basic_info.channel?.name || info.basic_info.author || "",
       error: errorMessage || null
     };

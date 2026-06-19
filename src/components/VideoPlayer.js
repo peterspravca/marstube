@@ -8,14 +8,14 @@ import { useRouter } from "next/navigation";
 export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) {
   const videoRef = useRef(null);
   const [streamUrl, setStreamUrl] = useState("");
+  const [mode, setMode] = useState("video"); // "video" alebo "audio"
+  const [loadingState, setLoadingState] = useState("idle"); // "idle", "checking", "downloading", "ready", "error"
+  const [downloadProgress, setDownloadProgress] = useState("");
+  const [downloadError, setDownloadError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     if (!streamData) return;
-    
-    if (streamData.streamUrl) {
-      setStreamUrl(streamData.streamUrl);
-    }
     
     // Uloženie do histórie
     if (!streamData.title) return;
@@ -45,10 +45,78 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
   }, [streamData]);
 
+  // Sťahovanie/Kontrola stavu na FTP pri zmene videa alebo prepnutí režimu (Video/Hudba)
+  useEffect(() => {
+    if (!streamData || !streamData.id) return;
+
+    let active = true;
+    const filename = mode === "video" 
+      ? `${streamData.id}_video.mp4` 
+      : `${streamData.id}_audio.m4a`;
+
+    const sourceUrl = mode === "video" ? streamData.videoUrl : streamData.audioUrl;
+
+    if (!sourceUrl) {
+      setLoadingState("error");
+      setDownloadError("Pre toto video sa nenašiel požadovaný stream.");
+      setStreamUrl("");
+      return;
+    }
+
+    const checkAndDownload = async () => {
+      setLoadingState("checking");
+      setDownloadProgress("Kontrolujem stav súboru na serveri...");
+      setDownloadError("");
+      setStreamUrl("");
+
+      try {
+        // 1. Skontrolujeme, či už súbor existuje na FTP
+        const checkRes = await fetch(`https://marso.sk/play/download.php?action=status&filename=${filename}`);
+        const checkData = await checkRes.json();
+
+        if (!active) return;
+
+        if (checkData.status === "ready") {
+          setLoadingState("ready");
+          setStreamUrl(checkData.url);
+          return;
+        }
+
+        // 2. Ak neexistuje, stiahneme ho zo servera marso.sk na FTP
+        setLoadingState("downloading");
+        setDownloadProgress("Pripravujem prehrávanie (sťahujem súbor na server, zvyčajne to trvá 2-5 sekúnd)...");
+
+        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}`);
+        const dlData = await dlRes.json();
+
+        if (!active) return;
+
+        if (dlData.status === "ready") {
+          setLoadingState("ready");
+          setStreamUrl(dlData.url);
+        } else {
+          throw new Error(dlData.error || "Nepodarilo sa stiahnuť súbor.");
+        }
+      } catch (err) {
+        if (!active) return;
+        console.error("Chyba synchronizácie s FTP:", err);
+        setLoadingState("error");
+        setDownloadError(err.message || "Chyba pri príprave streamu.");
+        setStreamUrl("");
+      }
+    };
+
+    checkAndDownload();
+
+    return () => {
+      active = false;
+    };
+  }, [streamData?.id, mode]);
+
   useEffect(() => {
     if (streamUrl && videoRef.current) {
       videoRef.current.play().catch(e => {
-        console.warn("Autoplay was prevented:", e);
+        console.warn("Autoplay bol zablokovaný:", e);
       });
     }
   }, [streamUrl]);
@@ -59,11 +127,58 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
   };
 
-  if (!streamData) return <div className={styles.loading}>Načítavam video...</div>;
+  if (!streamData) return <div className={styles.loading}>Načítavam dáta o videu...</div>;
 
   return (
     <div className={styles.playerContainer}>
-      {streamUrl ? (
+      {/* Tlačidlá prepínania Video / Hudba */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '0.5rem' }}>
+        <button 
+          onClick={() => setMode("video")}
+          style={{
+            padding: '0.7rem 1.4rem',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            background: mode === 'video' ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.08)',
+            color: 'white',
+            boxShadow: mode === 'video' ? 'var(--shadow-glass)' : 'none',
+            border: '1px solid rgba(255,255,255,0.1)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          🎥 Video
+        </button>
+        <button 
+          onClick={() => setMode("audio")}
+          style={{
+            padding: '0.7rem 1.4rem',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            background: mode === 'audio' ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.08)',
+            color: 'white',
+            boxShadow: mode === 'audio' ? 'var(--shadow-glass)' : 'none',
+            border: '1px solid rgba(255,255,255,0.1)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          🎵 Hudba (Audio)
+        </button>
+      </div>
+
+      {loadingState === "checking" || loadingState === "downloading" ? (
+        <div className={styles.loadingMedia}>
+          <div className={styles.spinner}></div>
+          <div style={{ marginTop: '1.5rem', fontWeight: '500', textAlign: 'center', maxWidth: '80%' }}>
+            {downloadProgress}
+          </div>
+        </div>
+      ) : streamUrl ? (
         <video
           ref={videoRef}
           src={streamUrl}
@@ -86,8 +201,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               style={{ position: 'absolute', top: 0, left: 0 }}
             ></iframe>
           </div>
-          <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
-            Upozornenie: Toto video je na serveroch blokované (Chyba: {streamData.error}). 
+            Upozornenie: Nepodarilo sa prehrať súbor priamo (Chyba: {downloadError || streamData.error || "Neznáma chyba"}). 
             Preto bol načítaný oficiálny YouTube prehrávač.
           </div>
         </div>

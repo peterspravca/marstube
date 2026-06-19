@@ -11,14 +11,14 @@ export default async function Home() {
 
   return (
     <main className="container animate-fade-in">
-      <header style={{ textAlign: "center", margin: "4rem 0" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
+      <header className="home-header">
+        <div className="home-logo-title">
           <img src="/logo.png" alt="MarsTube Logo" style={{ width: "80px", height: "80px", borderRadius: "16px", boxShadow: "var(--shadow-glow)" }} />
-          <h1 style={{ fontSize: "4rem" }}>
+          <h1 className="home-title">
             <span>Mars<span className="text-gradient">Tube</span></span>
           </h1>
         </div>
-        <p style={{ color: "var(--text-secondary)", fontSize: "1.2rem", maxWidth: "600px", margin: "0 auto", marginBottom: "3rem" }}>
+        <p className="home-subtitle">
           Bez reklám, bez prerušení. Váš osobný, prémiový zážitok.
         </p>
         

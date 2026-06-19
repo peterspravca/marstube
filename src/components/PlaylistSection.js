@@ -62,12 +62,12 @@ export default function PlaylistSection() {
 
   if (isInputMode) {
     return (
-      <div className="glass-panel" style={{ padding: "3rem", textAlign: "center", maxWidth: "600px", margin: "0 auto" }}>
+      <div className="glass-panel playlist-input-card">
         <h2>🎧 Pridajte si vlastný playlist</h2>
         <p style={{ color: "var(--text-secondary)", marginBottom: "2rem" }}>
           Vložte ID playlistu z YouTube alebo celý odkaz a počúvajte hudbu bez reklám.
         </p>
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div className="playlist-input-wrapper">
           <input
             type="text"
             placeholder="Napr. PL4cUxeGkcC9..."
@@ -88,7 +88,7 @@ export default function PlaylistSection() {
               background: "var(--accent-gradient)",
               border: "none",
               color: "white",
-              padding: "0 2rem",
+              padding: "1rem 2rem",
               borderRadius: "8px",
               fontWeight: "bold",
               cursor: "pointer"
@@ -102,10 +102,10 @@ export default function PlaylistSection() {
   }
 
   return (
-    <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+    <div className="playlist-container">
       
       {/* Ľavý panel: Informácie o playliste */}
-      <div style={{ flex: "1 1 300px", position: "sticky", top: "100px", display: "flex", flexDirection: "column" }}>
+      <div className="playlist-left">
         {playlistInfo ? (
           <>
             <img 
@@ -139,7 +139,7 @@ export default function PlaylistSection() {
       </div>
 
       {/* Pravý panel: Zoznam skladieb */}
-      <div style={{ flex: "3 1 500px", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+      <div className="playlist-right">
         {loading && <div style={{ color: "var(--text-secondary)", textAlign: "center", padding: "2rem" }}>Sťahujem položky playlistu...</div>}
         
         {!loading && videos.map((video, idx) => (
