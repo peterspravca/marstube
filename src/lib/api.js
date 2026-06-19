@@ -69,7 +69,26 @@ export async function getPlaylist(playlistId) {
 export async function getVideoStream(videoId) {
   try {
     const yt = await getYT();
-    const info = await yt.getInfo(videoId, { client: 'ANDROID' });
+    
+    const clients = ['IOS', 'ANDROID', 'TV_EMBEDDED', 'WEB'];
+    let info = null;
+    let clientErrorMessage = null;
+
+    for (const client of clients) {
+      try {
+        const tempInfo = await yt.getInfo(videoId, { client });
+        if (tempInfo.streaming_data) {
+          info = tempInfo;
+          break;
+        }
+      } catch (e) {
+        clientErrorMessage = e.message;
+      }
+    }
+
+    if (!info) {
+      throw new Error(clientErrorMessage || "Streaming data not available across all clients.");
+    }
     
     let finalUrl = null;
     let errorMessage = null;
