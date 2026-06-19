@@ -257,23 +257,35 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           />
         )
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-          <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden' }}>
-            <iframe
-              width="100%"
-              height="100%"
-              src={`https://www.youtube-nocookie.com/embed/${streamData.id}?autoplay=1`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{ position: 'absolute', top: 0, left: 0 }}
-            ></iframe>
+        mode === "audio" ? (
+          <div className={styles.audioPlayerWrapper} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)' }}>
+            <div className={styles.audioPosterWrapper}>
+              <img src={streamData.thumbnailUrl} alt="Album Cover" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
+              <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem' }}>❌ Nepodarilo sa prehrať audio priamo</div>
+                <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || "Chyba prípravy audio streamu."}</div>
+              </div>
+            </div>
           </div>
-          <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
-            Upozornenie: Nepodarilo sa prehrať súbor priamo (Chyba: {downloadError || streamData.error || "Neznáma chyba"}). 
-            Preto bol načítaný oficiálny YouTube prehrávač.
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden' }}>
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube-nocookie.com/embed/${streamData.id}?autoplay=1`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ position: 'absolute', top: 0, left: 0 }}
+              ></iframe>
+            </div>
+            <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
+              Upozornenie: Nepodarilo sa prehrať súbor priamo (Chyba: {downloadError || streamData.error || "Neznáma chyba"}). 
+              Preto bol načítaný oficiálny YouTube prehrávač.
+            </div>
           </div>
-        </div>
+        )
       )}
       
       {/* Ovládacie prvky pre Playlist */}
