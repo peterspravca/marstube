@@ -1,6 +1,7 @@
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -29,10 +30,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="sk" className={`${outfit.variable} ${inter.variable}`}>
+    <html lang="sk" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
-        <ServiceWorkerRegister />
-        {children}
+        <ThemeProvider attribute="data-theme" defaultTheme="dark">
+          <ServiceWorkerRegister />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

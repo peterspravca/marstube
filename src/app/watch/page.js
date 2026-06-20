@@ -1,6 +1,7 @@
 import VideoPlayer from "@/components/VideoPlayer";
 import SearchBar from "@/components/SearchBar";
 import AuthButton from "@/components/AuthButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import { getVideoStream } from "@/lib/api";
 
 export default async function WatchPage({ searchParams }) {
@@ -55,7 +56,8 @@ export default async function WatchPage({ searchParams }) {
         <div className="watch-search-wrapper">
           <SearchBar />
         </div>
-        <div style={{ marginLeft: "auto" }}>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
+          <ThemeToggle />
           <AuthButton />
         </div>
       </header>

@@ -3,6 +3,7 @@ import VideoCard from "@/components/VideoCard";
 import HistoryList from "@/components/HistoryList";
 import PlaylistSection from "@/components/PlaylistSection";
 import AuthButton from "@/components/AuthButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import { getTrending } from "@/lib/api";
 
 export const revalidate = 3600;
@@ -19,7 +20,8 @@ export default async function Home() {
             <span>Mars<span className="text-gradient">Tube</span></span>
           </h1>
         </div>
-        <div style={{ position: "fixed", top: "1.5rem", right: "2rem", zIndex: 1000 }}>
+        <div style={{ position: "fixed", top: "1.5rem", right: "2rem", zIndex: 1000, display: "flex", gap: "1rem", alignItems: "center" }}>
+          <ThemeToggle />
           <AuthButton />
         </div>
         <p className="home-subtitle">

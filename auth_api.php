@@ -279,6 +279,10 @@ try {
         )");
         $stmt->execute([$payload->user_id, $payload->user_id]);
         
+        // Zmazať záznamy staršie ako 24 hodín (na žiadosť)
+        $stmt = $pdo->prepare("DELETE FROM watch_history WHERE user_id = ? AND watched_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+        $stmt->execute([$payload->user_id]);
+        
         echo json_encode(["success" => true]);
         break;
 
