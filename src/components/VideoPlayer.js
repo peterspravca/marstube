@@ -506,7 +506,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             </a>
             {streamData.audioUrl && (
               <a 
-                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.m4a&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
+                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -521,10 +521,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
                   border: '1px solid var(--border-glass-solid)',
                   transition: 'all 0.2s'
                 }}
-                title="Stiahnuť hudbu (M4A)"
+                title="Stiahnuť hudbu (MP3)"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-                Stiahnuť Hudbu (M4A)
+                Stiahnuť Hudbu (MP3)
               </a>
             )}
           </div>
