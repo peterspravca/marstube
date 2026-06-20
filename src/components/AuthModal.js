@@ -38,7 +38,8 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
     <div style={{
       position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
       backgroundColor: "rgba(0,0,0,0.8)", zIndex: 9999,
-      display: "flex", alignItems: "center", justifyContent: "center",
+      display: "flex", alignItems: "flex-start", justifyContent: "center",
+      paddingTop: "6rem",
       backdropFilter: "blur(8px)"
     }}>
       <div style={{
