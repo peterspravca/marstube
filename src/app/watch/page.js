@@ -33,16 +33,14 @@ export default async function WatchPage({ searchParams }) {
     const playlistItems = playlistResult.items || [];
     const currentIndex = playlistItems.findIndex(item => item.id === videoId);
     
-    // Predchádzajúce video
-    if (currentIndex > 0) {
-      const prevId = playlistItems[currentIndex - 1].id;
-      prevVideoUrl = `/watch?v=${prevId}&list=${listId}`;
-    }
-    
-    // Nasledujúce video
-    if (currentIndex >= 0 && currentIndex < playlistItems.length - 1) {
-      const nextId = playlistItems[currentIndex + 1].id;
-      nextVideoUrl = `/watch?v=${nextId}&list=${listId}`;
+    if (playlistItems.length > 0 && currentIndex >= 0) {
+      // Predchádzajúce video (slučka na koniec, ak sme na začiatku)
+      const prevIndex = currentIndex > 0 ? currentIndex - 1 : playlistItems.length - 1;
+      prevVideoUrl = `/watch?v=${playlistItems[prevIndex].id}&list=${listId}`;
+      
+      // Nasledujúce video (slučka na začiatok, ak sme na konci)
+      const nextIndex = currentIndex < playlistItems.length - 1 ? currentIndex + 1 : 0;
+      nextVideoUrl = `/watch?v=${playlistItems[nextIndex].id}&list=${listId}`;
     }
   }
 
