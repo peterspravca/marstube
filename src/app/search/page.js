@@ -64,9 +64,27 @@ export default async function SearchPage({ searchParams }) {
   return (
     <main className="container animate-fade-in">
       <header style={{ marginBottom: "3rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <h1 style={{ fontSize: "2.5rem" }}>
-          Výsledky pre: <span className="text-gradient">{query}</span>
-        </h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+          <h1 style={{ fontSize: "2.5rem", margin: 0 }}>
+            Výsledky pre: <span className="text-gradient">{query}</span>
+          </h1>
+          <a href="/" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '24px',
+            background: 'var(--button-bg)',
+            color: 'var(--text-primary)',
+            textDecoration: 'none',
+            fontWeight: 'bold',
+            border: '1px solid var(--border-glass-solid)',
+            transition: 'background 0.2s'
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Domov
+          </a>
+        </div>
         <SearchBar />
       </header>
       
