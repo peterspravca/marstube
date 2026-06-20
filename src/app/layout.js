@@ -20,14 +20,6 @@ export const metadata = {
   title: "MarsTube - Ad-Free YouTube",
   description: "A premium, ad-free YouTube experience.",
   manifest: "/manifest.json",
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { url: "/logo.svg", type: "image/svg+xml", sizes: "512x512" }
-    ],
-    apple: "/logo.svg",
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
