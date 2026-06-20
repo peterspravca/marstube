@@ -100,31 +100,32 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     }
   }, []);
 
-  // Compute next/prev video URLs client-side if list is "favorites"
+  // Compute next/prev video URLs client-side if list is "favorites" or "history"
   useEffect(() => {
-    if (listId === "favorites" && streamData?.id) {
+    if ((listId === "favorites" || listId === "history") && streamData?.id) {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+        const storageKey = listId === "favorites" ? STORAGE_KEY_FAVORITES : "martubeHistory";
+        const saved = localStorage.getItem(storageKey);
         if (saved) {
-          const favs = JSON.parse(saved);
-          const currentIndex = favs.findIndex(f => f.id === streamData.id || f.video_id === streamData.id);
+          const listArr = JSON.parse(saved);
+          const currentIndex = listArr.findIndex(f => f.id === streamData.id || f.video_id === streamData.id);
           
           if (currentIndex > 0) {
-            const prevFav = favs[currentIndex - 1];
-            setClientPrevUrl(`/watch?v=${prevFav.id || prevFav.video_id}&list=favorites`);
+            const prevItem = listArr[currentIndex - 1];
+            setClientPrevUrl(`/watch?v=${prevItem.id || prevItem.video_id}&list=${listId}`);
           } else {
             setClientPrevUrl(null);
           }
 
-          if (currentIndex >= 0 && currentIndex < favs.length - 1) {
-            const nextFav = favs[currentIndex + 1];
-            setClientNextUrl(`/watch?v=${nextFav.id || nextFav.video_id}&list=favorites`);
+          if (currentIndex >= 0 && currentIndex < listArr.length - 1) {
+            const nextItem = listArr[currentIndex + 1];
+            setClientNextUrl(`/watch?v=${nextItem.id || nextItem.video_id}&list=${listId}`);
           } else {
             setClientNextUrl(null);
           }
         }
       } catch (e) {
-        console.error("Error computing favorite URLs", e);
+        console.error(`Error computing ${listId} URLs`, e);
       }
     } else {
       setClientPrevUrl(null);

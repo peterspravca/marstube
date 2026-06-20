@@ -53,6 +53,7 @@ export default function HistoryList() {
                 };
               });
               setHistory(historyItems);
+              localStorage.setItem("martubeHistory", JSON.stringify(historyItems));
               setLoading(false);
               return;
             }
@@ -109,9 +110,11 @@ export default function HistoryList() {
       gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
       gap: "2rem"
     }}>
-      {history.map((video, idx) => (
-        <VideoCard key={idx} video={video} />
-      ))}
+      {history.map((video, idx) => {
+        const cleanUrl = video.url ? video.url.split('&list=')[0] : `/watch?v=${video.id || video.video_id}`;
+        const finalUrl = `${cleanUrl}&list=history`;
+        return <VideoCard key={idx} video={{ ...video, url: finalUrl }} />;
+      })}
     </div>
   );
 }
