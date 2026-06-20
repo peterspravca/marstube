@@ -1,31 +1,48 @@
 "use client";
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
+import { authApi } from "../lib/auth";
 
 export default function AuthModal({ onClose, onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showVerify, setShowVerify] = useState(false);
+  const [verifyCode, setVerifyCode] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        if (data.user) onAuthSuccess(data.user);
+      if (showVerify) {
+        const data = await authApi.verify(email, verifyCode);
+        if (data.error) throw new Error(data.error);
+        if (data.success) {
+          onAuthSuccess({ email: data.email });
+        }
+      } else if (isLogin) {
+        const data = await authApi.login(email, password);
+        if (data.needsVerification) {
+          setShowVerify(true);
+          setSuccess("E-mail ešte nebol overený. Zadajte overovací kód, ktorý sme vám poslali pri registrácii.");
+          return;
+        }
+        if (data.error) throw new Error(data.error);
+        if (data.success) {
+          onAuthSuccess({ email: data.email });
+        }
       } else {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        if (data.user) {
-          // Sometimes Supabase requires email confirmation
-          onAuthSuccess(data.user);
+        const data = await authApi.register(email, password);
+        if (data.error) throw new Error(data.error);
+        if (data.success) {
+          setShowVerify(true);
+          setSuccess("Registrácia úspešná! Skontrolujte si e-mail a zadajte 6-miestny overovací kód.");
         }
       }
     } catch (err) {
@@ -58,13 +75,16 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
         >✕</button>
         
         <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          {isLogin ? "Prihlásenie" : "Registrácia"} do Mars<span className="text-gradient">Tube</span>
+          {showVerify ? "Overenie E-mailu" : (isLogin ? "Prihlásenie" : "Registrácia")} do Mars<span className="text-gradient">Tube</span>
         </h2>
 
         {error && <div style={{ color: "#ff4d4d", background: "rgba(255,70,70,0.1)", padding: "0.8rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.9rem" }}>{error}</div>}
+        {success && <div style={{ color: "#4ade80", background: "rgba(74,222,128,0.1)", padding: "0.8rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.9rem" }}>{success}</div>}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <input 
+          {!showVerify ? (
+            <>
+              <input 
             type="email" 
             placeholder="Email" 
             value={email} 
@@ -100,6 +120,20 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               {showPassword ? "🙈" : "👁️"}
             </button>
           </div>
+            </>
+          ) : (
+            <input 
+              type="text" 
+              placeholder="Zadajte 6-miestny kód z e-mailu" 
+              value={verifyCode} 
+              onChange={e => setVerifyCode(e.target.value)}
+              required
+              style={{
+                padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
+                background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem", textAlign: "center", letterSpacing: "2px"
+              }}
+            />
+          )}
           <button 
             type="submit" 
             disabled={loading}
@@ -110,22 +144,24 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               opacity: loading ? 0.7 : 1
             }}
           >
-            {loading ? "Čakajte..." : (isLogin ? "Prihlásiť sa" : "Zaregistrovať sa")}
+            {loading ? "Čakajte..." : (showVerify ? "Overiť a prihlásiť" : (isLogin ? "Prihlásiť sa" : "Zaregistrovať sa"))}
           </button>
         </form>
 
-        <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-          {isLogin ? "Nemáte ešte účet?" : "Už máte účet?"}
-          <button 
-            onClick={() => { setIsLogin(!isLogin); setError(""); }}
-            style={{ 
-              background: "none", border: "none", color: "var(--accent-primary)", 
-              fontWeight: "bold", cursor: "pointer", marginLeft: "0.5rem" 
-            }}
-          >
-            {isLogin ? "Zaregistrujte sa" : "Prihláste sa"}
-          </button>
-        </div>
+        {!showVerify && (
+          <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            {isLogin ? "Nemáte ešte účet?" : "Už máte účet?"}
+            <button 
+              onClick={() => { setIsLogin(!isLogin); setError(""); setSuccess(""); }}
+              style={{ 
+                background: "none", border: "none", color: "var(--accent-primary)", 
+                fontWeight: "bold", cursor: "pointer", marginLeft: "0.5rem" 
+              }}
+            >
+              {isLogin ? "Zaregistrujte sa" : "Prihláste sa"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

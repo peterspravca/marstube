@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabase";
+import { authApi } from "../lib/auth";
 import AuthModal from "./AuthModal";
 
 export default function AuthButton() {
@@ -9,19 +9,21 @@ export default function AuthButton() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
+    // Polling or simple check on mount
+    const checkUser = () => {
+      setUser(authApi.getUser());
+    };
+    checkUser();
+    
+    // Listen for storage changes in case login happens in another tab
+    window.addEventListener("storage", checkUser);
+    return () => window.removeEventListener("storage", checkUser);
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    authApi.logout();
+    setUser(null);
+    window.location.reload();
   };
 
   if (user) {
@@ -62,7 +64,10 @@ export default function AuthButton() {
       {showModal && (
         <AuthModal 
           onClose={() => setShowModal(false)} 
-          onAuthSuccess={() => setShowModal(false)} 
+          onAuthSuccess={(userData) => {
+            setShowModal(false);
+            setUser(userData);
+          }} 
         />
       )}
     </>

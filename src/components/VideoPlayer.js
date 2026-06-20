@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import styles from "./VideoPlayer.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "../lib/supabase";
+import { authApi } from "../lib/auth";
 
 const STORAGE_KEY_FAVORITES = "martubeFavorites";
 
@@ -105,16 +105,11 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         if (historyArray.length > 50) historyArray.pop(); // zvýšime limit pre neprihlásených
         localStorage.setItem("martubeHistory", JSON.stringify(historyArray));
 
-        // 2. Supabase uloženie (pre prihlásených)
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          // Uložíme záznam do Supabase. Duplikáty zatiaľ neriešime (pridá sa nový záznam o zhliadnutí)
-          await supabase.from("watch_history").insert([
-            {
-              user_id: session.user.id,
-              video_id: streamData.id
-            }
-          ]);
+        // 2. API uloženie (pre prihlásených)
+        const user = authApi.getUser();
+        if (user) {
+          // Uložíme záznam cez API
+          await authApi.saveHistory(streamData.id, streamData.title, streamData.thumbnailUrl);
         }
       } catch(e) {
         console.error("Chyba ukladania histórie", e);

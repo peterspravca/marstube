@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
-import { supabase } from "../lib/supabase";
+import { authApi } from "../lib/auth";
 
 export default function HistoryList() {
   const [history, setHistory] = useState([]);
@@ -13,33 +13,31 @@ export default function HistoryList() {
       try {
         setLoading(true);
         // 1. Skúsime získať prihláseného používateľa
-        const { data: { session } } = await supabase.auth.getSession();
+        const user = authApi.getUser();
         
-        if (session?.user) {
-          // Prihlásený používateľ: Načítaj zo Supabase
-          const { data, error } = await supabase
-            .from("watch_history")
-            .select("video_id")
-            .eq("user_id", session.user.id)
-            .order("created_at", { ascending: false })
-            .limit(20);
+        if (user) {
+          // Prihlásený používateľ: Načítaj z nášho API
+          const res = await authApi.getHistory();
             
-          if (error) throw error;
-          
-          if (data && data.length > 0) {
+          if (res.success && res.data && res.data.length > 0) {
             // Unikátne IDčka zachovávajúce poradie z databázy
-            const uniqueIds = [...new Set(data.map(item => item.video_id))];
+            const uniqueIds = [...new Set(res.data.map(item => item.video_id))];
             
-            // Dopyt na naše nové API pre získanie detailov
-            const res = await fetch(`/api/videos?ids=${uniqueIds.join(',')}`);
-            if (res.ok) {
-              const videoDetails = await res.json();
-              // Zachovanie poradia z histórie
-              const orderedHistory = uniqueIds.map(id => videoDetails.find(v => v.id === id)).filter(Boolean);
-              setHistory(orderedHistory);
-              setLoading(false);
-              return;
-            }
+            // Dopyt na naše nové API pre získanie detailov (pre dĺžku videa a iné detaily, alebo môžeme použiť title z DB)
+            // Zatiaľ použijeme priamo dáta z histórie pre rýchlosť:
+            const historyItems = uniqueIds.map(id => {
+              const dbItem = res.data.find(v => v.video_id === id);
+              return {
+                id: dbItem.video_id,
+                url: `/watch?v=${dbItem.video_id}`,
+                title: dbItem.title,
+                thumbnail: dbItem.thumbnail_url || "",
+                uploaderName: "MarsTube", // Môžeme pridať do DB ak treba
+              };
+            });
+            setHistory(historyItems);
+            setLoading(false);
+            return;
           }
           
           setHistory([]);
@@ -69,13 +67,6 @@ export default function HistoryList() {
     };
 
     fetchHistory();
-    
-    // Pridáme poslucháč na zmenu prihlásenia, aby sa história obnovila pri login/logout
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      fetchHistory();
-    });
-    
-    return () => subscription.unsubscribe();
   }, []);
 
   if (loading) {
