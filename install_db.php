@@ -47,6 +47,22 @@ try {
     ");
     echo "Tabuľka 'watch_history' vytvorená (alebo už existuje).\n\n";
 
+    echo "Vytváram tabuľku 'favorites'...\n";
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            video_id VARCHAR(50) NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            thumbnail_url VARCHAR(500) NULL,
+            uploader_name VARCHAR(255) NULL,
+            added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_user_video (user_id, video_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    echo "Tabuľka 'favorites' vytvorená (alebo už existuje).\n\n";
+
     echo "✅ VŠETKO HOTOVO! Tabuľky boli úspešne vytvorené.\n";
     echo "Teraz môžeš zavrieť túto stránku a vyskúšať prihlásenie/registráciu na tvojom webe.";
 

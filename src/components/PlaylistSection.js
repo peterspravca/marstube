@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { authApi } from "../lib/auth";
 
 const STORAGE_KEY_PLAYLISTS = "martubeSavedPlaylists"; // Array of { id, name? }
 const STORAGE_KEY_FAVORITES = "martubeFavorites"; // Array of { id, url, title, thumbnail, uploaderName, addedAt }
@@ -35,10 +36,37 @@ export default function PlaylistSection() {
         localStorage.removeItem("martubeSavedPlaylist");
       }
 
-      const savedFavorites = localStorage.getItem(STORAGE_KEY_FAVORITES);
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
-      }
+      const loadFavorites = async () => {
+        const user = authApi.getUser();
+        if (user) {
+          try {
+            const dbFavs = await authApi.getFavorites();
+            if (Array.isArray(dbFavs)) {
+              const formattedFavs = dbFavs.map(f => ({
+                id: f.video_id,
+                video_id: f.video_id,
+                url: `/watch?v=${f.video_id}`,
+                title: f.title,
+                thumbnail: f.thumbnail_url,
+                uploaderName: f.uploader_name,
+                addedAt: new Date(f.added_at).getTime()
+              }));
+              setFavorites(formattedFavs);
+              return;
+            }
+          } catch (err) {
+            console.error("Error loading DB favs:", err);
+          }
+        }
+        
+        // Fallback
+        const savedFavorites = localStorage.getItem(STORAGE_KEY_FAVORITES);
+        if (savedFavorites) {
+          setFavorites(JSON.parse(savedFavorites));
+        }
+      };
+      
+      loadFavorites();
     } catch (e) {
       console.error("Error loading saved data:", e);
     }
@@ -112,10 +140,19 @@ export default function PlaylistSection() {
   };
 
   // --- Remove favorite ---
-  const handleRemoveFavorite = (videoId) => {
-    const updated = favorites.filter(f => f.id !== videoId);
+  const handleRemoveFavorite = async (videoId) => {
+    const updated = favorites.filter(f => f.id !== videoId && f.video_id !== videoId);
     setFavorites(updated);
     localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(updated));
+
+    const user = authApi.getUser();
+    if (user) {
+      try {
+        await authApi.removeFavorite(videoId);
+      } catch (e) {
+        console.error("Error removing DB favorite:", e);
+      }
+    }
   };
 
   // --- Playlist name from info ---

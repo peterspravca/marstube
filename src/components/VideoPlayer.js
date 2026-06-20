@@ -22,28 +22,55 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   // Check if video is in favorites
   useEffect(() => {
     if (!streamData?.id) return;
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
-      if (saved) {
-        const favs = JSON.parse(saved);
-        setIsFavorite(favs.some(f => f.id === streamData.id));
+    const checkFavorite = async () => {
+      try {
+        const user = authApi.getUser();
+        if (user) {
+          const dbFavs = await authApi.getFavorites();
+          if (Array.isArray(dbFavs)) {
+            setIsFavorite(dbFavs.some(f => f.video_id === streamData.id));
+            return;
+          }
+        }
+        
+        // Fallback to local storage
+        const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+        if (saved) {
+          const favs = JSON.parse(saved);
+          setIsFavorite(favs.some(f => f.id === streamData.id || f.video_id === streamData.id));
+        }
+      } catch (e) {
+        console.error("Error checking favorite:", e);
       }
-    } catch (e) {
-      console.error(e);
-    }
+    };
+    checkFavorite();
   }, [streamData?.id]);
 
-  const toggleFavorite = () => {
+  const toggleFavorite = async () => {
     if (!streamData?.id) return;
     try {
+      const user = authApi.getUser();
+      const isCurrentlyFavorite = isFavorite;
+      setIsFavorite(!isCurrentlyFavorite); // Optimistic UI update
+
+      if (user) {
+        if (isCurrentlyFavorite) {
+          await authApi.removeFavorite(streamData.id);
+        } else {
+          await authApi.addFavorite(streamData.id, streamData.title, streamData.thumbnailUrl, streamData.uploader);
+        }
+      }
+
+      // Vždy uložíme aj lokálne pre konzistenciu alebo neprihlásených
       const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
       let favs = saved ? JSON.parse(saved) : [];
 
-      if (isFavorite) {
-        favs = favs.filter(f => f.id !== streamData.id);
+      if (isCurrentlyFavorite) {
+        favs = favs.filter(f => f.id !== streamData.id && f.video_id !== streamData.id);
       } else {
         favs.unshift({
           id: streamData.id,
+          video_id: streamData.id,
           url: `/watch?v=${streamData.id}`,
           title: streamData.title,
           thumbnail: streamData.thumbnailUrl,
@@ -53,9 +80,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       }
 
       localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(favs));
-      setIsFavorite(!isFavorite);
     } catch (e) {
-      console.error(e);
+      console.error("Error toggling favorite:", e);
+      setIsFavorite(isFavorite); // Revert on error
     }
   };
 

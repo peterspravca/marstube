@@ -79,5 +79,48 @@ export const authApi = {
       }
     });
     return res.json();
+  },
+
+  async getFavorites() {
+    const token = localStorage.getItem("mars_token");
+    if (!token) return { error: "Not logged in" };
+
+    const res = await fetch(`${API_URL}?action=get_favorites`, {
+      method: "GET",
+      headers: { 
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    return res.json();
+  },
+
+  async addFavorite(videoId, title, thumbnailUrl, uploaderName) {
+    const token = localStorage.getItem("mars_token");
+    if (!token) return { error: "Not logged in" };
+
+    const res = await fetch(`${API_URL}?action=add_favorite`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ video_id: videoId, title, thumbnail_url: thumbnailUrl, uploader_name: uploaderName }),
+    });
+    return res.json();
+  },
+
+  async removeFavorite(videoId) {
+    const token = localStorage.getItem("mars_token");
+    if (!token) return { error: "Not logged in" };
+
+    const res = await fetch(`${API_URL}?action=remove_favorite`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ video_id: videoId }),
+    });
+    return res.json();
   }
 };

@@ -282,6 +282,42 @@ try {
         echo json_encode(["success" => true]);
         break;
 
+    case 'get_favorites':
+        $stmt = $pdo->prepare("SELECT * FROM favorites WHERE user_id = ? ORDER BY added_at DESC");
+        $stmt->execute([$payload->user_id]);
+        $favorites = $stmt->fetchAll();
+        
+        echo json_encode($favorites);
+        break;
+
+    case 'add_favorite':
+        $data = json_decode(file_get_contents("php://input"));
+        if (!isset($data->video_id) || !isset($data->title)) {
+            echo json_encode(["error" => "Chýbajúce dáta"]);
+            exit;
+        }
+        
+        try {
+            $stmt = $pdo->prepare("INSERT IGNORE INTO favorites (user_id, video_id, title, thumbnail_url, uploader_name) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$payload->user_id, $data->video_id, $data->title, isset($data->thumbnail_url) ? $data->thumbnail_url : null, isset($data->uploader_name) ? $data->uploader_name : null]);
+            echo json_encode(["success" => true]);
+        } catch (\PDOException $e) {
+            echo json_encode(["error" => "Chyba pri ukladaní do obľúbených"]);
+        }
+        break;
+
+    case 'remove_favorite':
+        $data = json_decode(file_get_contents("php://input"));
+        if (!isset($data->video_id)) {
+            echo json_encode(["error" => "Chýbajúce dáta"]);
+            exit;
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM favorites WHERE user_id = ? AND video_id = ?");
+        $stmt->execute([$payload->user_id, $data->video_id]);
+        echo json_encode(["success" => true]);
+        break;
+
     // 5. ZÍSKAŤ HISTÓRIU
     case 'get_history':
         $tokenRaw = getBearerToken();
