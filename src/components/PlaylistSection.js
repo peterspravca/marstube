@@ -40,8 +40,24 @@ export default function PlaylistSection() {
         const user = authApi.getUser();
         if (user) {
           try {
-            const dbFavs = await authApi.getFavorites();
+            let dbFavs = await authApi.getFavorites();
             if (Array.isArray(dbFavs)) {
+              // Migrácia z localStorage ak je databáza prázdna
+              if (dbFavs.length === 0) {
+                const savedFavorites = localStorage.getItem(STORAGE_KEY_FAVORITES);
+                if (savedFavorites) {
+                  const localFavs = JSON.parse(savedFavorites);
+                  for (let i = localFavs.length - 1; i >= 0; i--) {
+                    const f = localFavs[i];
+                    if (f && (f.id || f.video_id)) {
+                      await authApi.addFavorite(f.video_id || f.id, f.title || "Video", f.thumbnail || "", f.uploaderName || "");
+                    }
+                  }
+                  const newDbFavs = await authApi.getFavorites();
+                  if (Array.isArray(newDbFavs)) dbFavs = newDbFavs;
+                }
+              }
+
               const formattedFavs = dbFavs.map(f => ({
                 id: f.video_id,
                 video_id: f.video_id,
