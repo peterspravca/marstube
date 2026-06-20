@@ -327,11 +327,21 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       </div>
 
       {loadingState === "checking" || loadingState === "downloading" ? (
-        <div className={styles.loadingMedia}>
-          <div className={styles.spinner}></div>
-          <div style={{ marginTop: '1.5rem', fontWeight: '500', textAlign: 'center', maxWidth: '80%' }}>
+        <div className={styles.loadingMedia} style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Animated Background Glow */}
+          <div style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', background: 'radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.15), transparent 60%)', animation: 'spin 15s linear infinite' }}></div>
+          
+          <img src="/logo.svg" alt="MarsTube Logo" className="floating-logo" style={{ width: "90px", height: "90px", marginBottom: "1.5rem", zIndex: 1 }} />
+          
+          <h2 style={{ fontSize: "1.8rem", fontWeight: "800", zIndex: 1, margin: 0, marginBottom: "0.5rem" }}>
+            <span>Pripravujem <span className="text-gradient">MarsTube</span> zážitok</span>
+          </h2>
+          
+          <div style={{ marginTop: '1rem', fontWeight: '500', textAlign: 'center', maxWidth: '80%', zIndex: 1, color: 'var(--text-secondary)', fontSize: '1.05rem', letterSpacing: '0.5px' }}>
             {downloadProgress}
           </div>
+          
+          <div className={styles.spinner} style={{ marginTop: '2.5rem', width: '40px', height: '40px', borderWidth: '3px', zIndex: 1, borderLeftColor: 'var(--accent-primary)' }}></div>
         </div>
       ) : streamUrl ? (
         mode === "audio" ? (
