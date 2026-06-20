@@ -276,6 +276,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         <button 
           onClick={() => changeMode("video")}
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
             padding: '0.7rem 1.4rem',
             borderRadius: '24px',
             border: 'none',
@@ -289,11 +292,18 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
-          🎥 Video
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+          Video
         </button>
         <button 
           onClick={() => changeMode("audio")}
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
             padding: '0.7rem 1.4rem',
             borderRadius: '24px',
             border: 'none',
@@ -307,7 +317,12 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
-          🎵 Hudba
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          Hudba
         </button>
       </div>
 
@@ -363,7 +378,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             <div className={styles.audioPosterWrapper}>
               <img src="/logo.svg" alt="MarsTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
               <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
-                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem' }}>❌ Nepodarilo sa prehrať audio priamo</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                  Nepodarilo sa prehrať audio priamo
+                </div>
                 <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || "Chyba prípravy audio streamu."}</div>
               </div>
             </div>
@@ -397,7 +415,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               onClick={() => router.push(prevVideoUrl)}
               style={{ background: 'var(--button-bg)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
             >
-              ⏮ Predchádzajúca
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+                Predchádzajúca
+              </div>
             </button>
           ) : <div></div>}
           
@@ -406,7 +427,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               onClick={() => router.push(nextVideoUrl)}
               style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
             >
-              Nasledujúca ⏭
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                Nasledujúca
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+              </div>
             </button>
           ) : <div></div>}
         </div>
@@ -443,7 +467,11 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
               title={isFavorite ? 'Odstrániť z obľúbených' : 'Pridať do obľúbených'}
             >
-              {isFavorite ? '❤️ Obľúbené' : '🤍 Obľúbiť'}
+              {isFavorite ? (
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Obľúbené</>
+              ) : (
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Obľúbiť</>
+              )}
             </button>
             <a 
               href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
@@ -463,7 +491,8 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               }}
               title="Stiahnuť video (MP4)"
             >
-              🎥 Stiahnuť Video (MP4)
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Stiahnuť Video (MP4)
             </a>
           </div>
         </div>

@@ -229,7 +229,10 @@ export default function PlaylistSection() {
     <div>
       {/* Section Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <h2 style={{ fontSize: "2rem", margin: 0 }}>🎶 Moja hudba</h2>
+        <h2 style={{ fontSize: "2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+          Moja hudba
+        </h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           style={{
@@ -247,7 +250,11 @@ export default function PlaylistSection() {
             gap: "0.4rem",
           }}
         >
-          {showAddForm ? "✕ Zavrieť" : "＋ Pridať playlist"}
+          {showAddForm ? (
+            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Zavrieť</>
+          ) : (
+            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Pridať playlist</>
+          )}
         </button>
       </div>
 
@@ -319,7 +326,7 @@ export default function PlaylistSection() {
           onClick={() => setActiveTab("favorites")}
           style={tabStyle(activeTab === "favorites")}
         >
-          ❤️ Obľúbené
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Obľúbené
           {favorites.length > 0 && (
             <span style={{
               background: "var(--button-bg-hover)",
@@ -339,7 +346,7 @@ export default function PlaylistSection() {
               onClick={() => setActiveTab(pl.id)}
               style={tabStyle(activeTab === pl.id)}
             >
-              🎵 {pl.name || "Playlist"}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg> {pl.name || "Playlist"}
             </button>
             <button
               onClick={(e) => {
@@ -374,7 +381,7 @@ export default function PlaylistSection() {
               }}
               title="Odstrániť playlist"
             >
-              ✕
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
           </div>
         ))}
@@ -393,10 +400,12 @@ export default function PlaylistSection() {
                 color: "var(--text-secondary)",
               }}
             >
-              <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>❤️</div>
+              <div style={{ marginBottom: "1rem", color: "var(--accent-primary)" }}>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </div>
               <h3 style={{ marginBottom: "0.5rem", color: "var(--text-primary)" }}>Zatiaľ žiadne obľúbené</h3>
               <p style={{ maxWidth: "400px", margin: "0 auto" }}>
-                Kliknite na ❤️ pri videu na stránke prehrávania a uložte si ho sem.
+                Kliknite na <svg width="16" height="16" style={{verticalAlign:"middle", color:"var(--accent-primary)"}} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> pri videu na stránke prehrávania a uložte si ho sem.
               </p>
             </div>
           ) : (

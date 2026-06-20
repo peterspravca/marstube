@@ -38,13 +38,19 @@ export default async function Home() {
 
       {/* Sekcia: História */}
       <section style={{ marginTop: "4rem" }}>
-        <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>🕒 História sledovania</h2>
+        <h2 style={{ fontSize: "2rem", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "10px" }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          História sledovania
+        </h2>
         <HistoryList />
       </section>
       
       {/* Sekcia: Trendy */}
       <section style={{ marginTop: "4rem", marginBottom: "4rem" }}>
-        <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>🔥 Trendy</h2>
+        <h2 style={{ fontSize: "2rem", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "10px" }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c-2.2-4.5-6-5.5-6-5.5s4 1 6.5 5.5c1.5-3.5-1-6.5-1-6.5s3.5 1.5 4.5 5.5c.5-1.5-.5-3.5-.5-3.5s2 1.5 2 4.5a5.5 5.5 0 1 1-8 0z"></path></svg>
+          Trendy
+        </h2>
         {trendingVideos && trendingVideos.length > 0 ? (
           <div style={{
             display: "grid",
