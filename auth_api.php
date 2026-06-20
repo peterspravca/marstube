@@ -86,11 +86,73 @@ function getBearerToken() {
     return null;
 }
 
+// Funkcia na odoslanie e-mailu priamo cez SMTP server so zadanými heslami
+function send_mail_smtp($to, $subject, $body) {
+    $smtp_host = "ssl://mail.usr.sk";
+    $smtp_port = 465;
+    $smtp_user = "noreply@marso.sk";
+    $smtp_pass = "Neviem0950400203";
+
+    $socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15);
+    if (!$socket) {
+        throw new Exception("Nepodarilo sa pripojiť na SMTP server: $errno $errstr");
+    }
+
+    $read_res = function($sock) {
+        $res = "";
+        while ($str = fgets($sock, 515)) {
+            $res .= $str;
+            if (substr($str, 3, 1) == " ") break;
+        }
+        return $res;
+    };
+
+    $read_res($socket);
+
+    fputs($socket, "EHLO marso.sk\r\n");
+    $read_res($socket);
+
+    fputs($socket, "AUTH LOGIN\r\n");
+    $read_res($socket);
+
+    fputs($socket, base64_encode($smtp_user) . "\r\n");
+    $read_res($socket);
+
+    fputs($socket, base64_encode($smtp_pass) . "\r\n");
+    $auth_res = $read_res($socket);
+    
+    if (substr($auth_res, 0, 3) != "235") {
+        throw new Exception("Chyba overenia SMTP (zlé heslo alebo e-mail): $auth_res");
+    }
+
+    fputs($socket, "MAIL FROM: <$smtp_user>\r\n");
+    $read_res($socket);
+
+    fputs($socket, "RCPT TO: <$to>\r\n");
+    $read_res($socket);
+
+    fputs($socket, "DATA\r\n");
+    $read_res($socket);
+
+    $headers = "From: MarsTube <$smtp_user>\r\n";
+    $headers .= "To: $to\r\n";
+    $headers .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
+    
+    fputs($socket, $headers . $body . "\r\n.\r\n");
+    $read_res($socket);
+
+    fputs($socket, "QUIT\r\n");
+    fclose($socket);
+}
+
 // ========================
 // SPRACOVANIE AKCIÍ
 // ========================
 
-switch ($action) {
+try {
+    switch ($action) {
     
     // 1. REGISTRÁCIA
     case 'register':
@@ -115,15 +177,17 @@ switch ($action) {
         
         $stmt = $pdo->prepare("INSERT INTO users (email, password_hash, verification_code) VALUES (?, ?, ?)");
         if ($stmt->execute([$email, $hash, $code])) {
-            // Poslať email
+            // Poslať email cez SMTP
             $subject = "Overenie registracie do MarsTube";
             $message = "Vítame vás v MarsTube!\n\nVáš overovací kód je: $code\n\nZadajte tento kód do aplikácie pre dokončenie registrácie.";
-            $headers = "From: noreply@marso.sk\r\n";
-            $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
             
-            mail($email, $subject, $message, $headers);
-            
-            echo json_encode(["success" => true, "message" => "Registrácia úspešná, bol odoslaný overovací e-mail."]);
+            try {
+                send_mail_smtp($email, $subject, $message);
+                echo json_encode(["success" => true, "message" => "Registrácia úspešná, bol odoslaný overovací e-mail."]);
+            } catch (Exception $mailError) {
+                // E-mail zlyhal
+                echo json_encode(["error" => "Účet vytvorený, ale nastala chyba pri odosielaní emailu: " . $mailError->getMessage()]);
+            }
         } else {
             echo json_encode(["error" => "Chyba pri ukladaní do databázy."]);
         }
@@ -200,8 +264,20 @@ switch ($action) {
             exit;
         }
         
+        // Odstránime predchádzajúci záznam tohto istého videa, aby sme ho mohli vložiť na vrch histórie
+        $stmt = $pdo->prepare("DELETE FROM watch_history WHERE user_id = ? AND video_id = ?");
+        $stmt->execute([$payload->user_id, $data->video_id]);
+        
         $stmt = $pdo->prepare("INSERT INTO watch_history (user_id, video_id, title, thumbnail_url) VALUES (?, ?, ?, ?)");
         $stmt->execute([$payload->user_id, $data->video_id, $data->title, isset($data->thumbnail_url) ? $data->thumbnail_url : null]);
+        
+        // Zmazať všetko okrem posledných 50 záznamov pre daného používateľa
+        $stmt = $pdo->prepare("DELETE FROM watch_history WHERE user_id = ? AND id NOT IN (
+            SELECT id FROM (
+                SELECT id FROM watch_history WHERE user_id = ? ORDER BY watched_at DESC LIMIT 50
+            ) as t
+        )");
+        $stmt->execute([$payload->user_id, $payload->user_id]);
         
         echo json_encode(["success" => true]);
         break;
@@ -223,8 +299,13 @@ switch ($action) {
         echo json_encode(["success" => true, "data" => $history]);
         break;
 
-    default:
-        echo json_encode(["error" => "Neznáma akcia"]);
-        break;
+        default:
+            echo json_encode(["error" => "Neznáma akcia"]);
+            break;
+    }
+} catch (Exception $e) {
+    // Zachytenie chýb (napr. ak chýbajú tabuľky v databáze)
+    http_response_code(500);
+    echo json_encode(["error" => "Chyba na serveri: " . $e->getMessage()]);
 }
 ?>
