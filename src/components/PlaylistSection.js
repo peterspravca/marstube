@@ -109,6 +109,7 @@ export default function PlaylistSection() {
                 addedAt: new Date(f.added_at).getTime()
               }));
               setFavorites(formattedFavs);
+              localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(formattedFavs));
               return;
             }
           } catch (err) {
