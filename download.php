@@ -4,12 +4,12 @@ header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
 
-// Smaž súbory staršie ako 6 hodín (21600 sekúnd)
+// Smaž súbory staršie ako 1 hodinu (3600 sekúnd)
 $files = array_merge(glob('*_video.mp4'), glob('*_audio.m4a'), glob('*_audio.mp3'));
 $now = time();
 foreach ($files as $file) {
     if (is_file($file)) {
-        if ($now - filemtime($file) >= 21600) {
+        if ($now - filemtime($file) >= 3600) {
             unlink($file);
         }
     }
