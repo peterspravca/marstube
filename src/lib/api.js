@@ -33,13 +33,8 @@ export async function getTrending() {
     // Vyhľadáme videá, požiadame YT o krátke (do 4 min) ak to knižnica podporuje
     const searchResult = await yt.search(randomQuery, { type: 'video', duration: 'short' });
     
-    // Pre istotu vyfiltrujeme manuálne: žiadne LIVE streamy a max 6 minút (360 sekúnd)
-    const filteredVideos = (searchResult.videos || []).filter(v => {
-      if (v.is_live) return false;
-      const durationSeconds = v.duration?.seconds || 0;
-      // Niektoré videá nemusia mať duration správne načítané, ale ak majú, obmedzíme na 360s
-      return durationSeconds > 0 && durationSeconds <= 360;
-    });
+    // Vyfiltrujeme iba LIVE streamy. Dĺžku už neriešime, keďže sme dali parameter duration: 'short'
+    const filteredVideos = (searchResult.videos || []).filter(v => !v.is_live);
     
     // Zoberieme maximálne 20 výsledkov
     const videos = filteredVideos.slice(0, 20);
