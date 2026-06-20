@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import styles from "./SearchBar.module.css";
 
 function parseYoutubeUrl(urlStr) {
@@ -38,12 +38,21 @@ function parseYoutubeUrl(urlStr) {
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Reset loading state when navigation finishes
+  useEffect(() => {
+    setIsLoading(false);
+  }, [pathname, searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     const val = query.trim();
     if (!val) return;
+    setIsLoading(true);
 
     if (val.includes("youtube.com") || val.includes("youtu.be")) {
       const parsed = parseYoutubeUrl(val);
@@ -65,18 +74,53 @@ export default function SearchBar() {
   };
 
   return (
-    <form className={styles.searchForm} onSubmit={handleSearch}>
-      <input
-        type="text"
-        className={styles.searchInput}
-        placeholder="Vyhľadať video..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <button type="submit" className={styles.searchButton}>
-        Hľadať
-      </button>
-    </form>
+    <>
+      <form className={styles.searchForm} onSubmit={handleSearch}>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Vyhľadať video..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <button type="submit" className={styles.searchButton}>
+          Hľadať
+        </button>
+      </form>
+
+      {isLoading && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#ffffff'
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            border: '4px solid rgba(255,255,255,0.1)',
+            borderLeftColor: 'var(--accent-primary, #a855f7)',
+            borderRadius: '50%',
+            animation: 'searchSpinner 1s linear infinite',
+            marginBottom: '1.5rem'
+          }}></div>
+          <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 'bold' }}>Vyhľadávam...</h2>
+          <p style={{ color: 'var(--text-secondary, #a0a0a5)', marginTop: '0.8rem', fontSize: '1.1rem' }}>Spracovávam požiadavku, prosím počkajte.</p>
+          <style>{`
+            @keyframes searchSpinner {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
+    </>
   );
 }
 
