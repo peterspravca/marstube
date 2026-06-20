@@ -504,6 +504,29 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               Stiahnuť Video (MP4)
             </a>
+            {streamData.audioUrl && (
+              <a 
+                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.m4a&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '16px',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  background: 'var(--button-bg)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-glass-solid)',
+                  transition: 'all 0.2s'
+                }}
+                title="Stiahnuť hudbu (M4A)"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                Stiahnuť Hudbu (M4A)
+              </a>
+            )}
           </div>
         </div>
         <div className={styles.description}>
