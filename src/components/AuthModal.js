@@ -92,7 +92,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
             required
             style={{
               padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
-              background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem"
+              background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "1rem"
             }}
           />
           <div style={{ position: "relative" }}>
@@ -104,7 +104,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               required
               style={{
                 width: "100%", padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
-                background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem", paddingRight: "3rem"
+                background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "1rem", paddingRight: "3rem"
               }}
             />
             <button
@@ -130,7 +130,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               required
               style={{
                 padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
-                background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem", textAlign: "center", letterSpacing: "2px"
+                background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "1rem", textAlign: "center", letterSpacing: "2px"
               }}
             />
           )}

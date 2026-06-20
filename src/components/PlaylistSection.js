@@ -180,9 +180,9 @@ export default function PlaylistSection() {
   const tabStyle = (isActive) => ({
     padding: "0.6rem 1.2rem",
     borderRadius: "20px",
-    border: "1px solid " + (isActive ? "rgba(124, 58, 237, 0.5)" : "rgba(255,255,255,0.1)"),
-    background: isActive ? "var(--accent-gradient)" : "rgba(255,255,255,0.05)",
-    color: "white",
+    border: "1px solid " + (isActive ? "var(--accent-primary)" : "var(--border-glass)"),
+    background: isActive ? "var(--accent-gradient)" : "var(--button-bg)",
+    color: isActive ? "white" : "var(--text-primary)",
     cursor: "pointer",
     fontWeight: isActive ? "bold" : "500",
     fontSize: "0.9rem",
@@ -191,13 +191,13 @@ export default function PlaylistSection() {
     display: "flex",
     alignItems: "center",
     gap: "0.4rem",
-    boxShadow: isActive ? "0 4px 15px rgba(124, 58, 237, 0.3)" : "none",
+    boxShadow: isActive ? "var(--shadow-glow)" : "none",
   });
 
   const removeButtonStyle = {
     background: "none",
     border: "none",
-    color: "rgba(255,255,255,0.4)",
+    color: "var(--text-secondary)",
     cursor: "pointer",
     fontSize: "0.75rem",
     padding: "2px 4px",
@@ -217,9 +217,9 @@ export default function PlaylistSection() {
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           style={{
-            background: showAddForm ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            color: "white",
+            background: showAddForm ? "var(--button-bg-hover)" : "var(--button-bg)",
+            border: "1px solid var(--border-glass-solid)",
+            color: "var(--text-primary)",
             padding: "0.6rem 1.2rem",
             borderRadius: "20px",
             cursor: "pointer",
@@ -260,8 +260,8 @@ export default function PlaylistSection() {
                 padding: "0.8rem 1rem",
                 borderRadius: "10px",
                 border: "1px solid var(--border-glass)",
-                background: "rgba(255, 255, 255, 0.05)",
-                color: "white",
+                background: "var(--input-bg)",
+                color: "var(--text-primary)",
                 fontSize: "0.95rem",
                 outline: "none",
               }}
@@ -306,7 +306,7 @@ export default function PlaylistSection() {
           ❤️ Obľúbené
           {favorites.length > 0 && (
             <span style={{
-              background: "rgba(255,255,255,0.15)",
+              background: "var(--button-bg-hover)",
               borderRadius: "10px",
               padding: "0.1rem 0.5rem",
               fontSize: "0.75rem",
@@ -331,9 +331,9 @@ export default function PlaylistSection() {
                 handleRemovePlaylist(pl.id);
               }}
               style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "rgba(255,255,255,0.6)",
+                background: "var(--button-bg)",
+                border: "1px solid var(--border-glass-solid)",
+                color: "var(--text-secondary)",
                 cursor: "pointer",
                 fontSize: "0.9rem",
                 padding: "0.4rem 0.55rem",
@@ -352,9 +352,9 @@ export default function PlaylistSection() {
                 e.currentTarget.style.borderColor = "rgba(255,70,70,0.4)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.6)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                e.currentTarget.style.background = "var(--button-bg)";
+                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.borderColor = "var(--border-glass-solid)";
               }}
               title="Odstrániť playlist"
             >
@@ -378,7 +378,7 @@ export default function PlaylistSection() {
               }}
             >
               <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>❤️</div>
-              <h3 style={{ marginBottom: "0.5rem", color: "white" }}>Zatiaľ žiadne obľúbené</h3>
+              <h3 style={{ marginBottom: "0.5rem", color: "var(--text-primary)" }}>Zatiaľ žiadne obľúbené</h3>
               <p style={{ maxWidth: "400px", margin: "0 auto" }}>
                 Kliknite na ❤️ pri videu na stránke prehrávania a uložte si ho sem.
               </p>
@@ -493,7 +493,7 @@ export default function PlaylistSection() {
                 <div style={{
                   width: "40px",
                   height: "40px",
-                  border: "3px solid rgba(255,255,255,0.1)",
+                  border: "3px solid var(--border-glass-solid)",
                   borderTop: "3px solid var(--accent-primary)",
                   borderRadius: "50%",
                   animation: "spin 0.8s linear infinite",
@@ -528,7 +528,7 @@ export default function PlaylistSection() {
                     gap: "0.3rem",
                   }}
                 >
-                  <span style={{ fontWeight: "bold", color: "white" }}>{playlistInfo.author}</span>
+                  <span style={{ fontWeight: "bold", color: "var(--text-primary)" }}>{playlistInfo.author}</span>
                   <span>Zoznam • {playlistInfo.totalItems} skladieb</span>
                 </div>
 
@@ -537,8 +537,8 @@ export default function PlaylistSection() {
                     <a
                       href={playlistVideos[0].url}
                       style={{
-                        background: "white",
-                        color: "black",
+                        background: "var(--text-primary)",
+                        color: "var(--bg-primary)",
                         padding: "0.8rem 1.5rem",
                         borderRadius: "30px",
                         textAlign: "center",
@@ -560,9 +560,9 @@ export default function PlaylistSection() {
                   <button
                     onClick={() => handleRemovePlaylist(activeTab)}
                     style={{
-                      background: "rgba(255,255,255,0.08)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "white",
+                      background: "var(--button-bg)",
+                      border: "1px solid var(--border-glass-solid)",
+                      color: "var(--text-primary)",
                       padding: "0.8rem 1.5rem",
                       borderRadius: "30px",
                       cursor: "pointer",
@@ -580,9 +580,9 @@ export default function PlaylistSection() {
                       e.currentTarget.style.color = "#ff4d4d";
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                      e.currentTarget.style.color = "white";
+                      e.currentTarget.style.background = "var(--button-bg)";
+                      e.currentTarget.style.borderColor = "var(--border-glass-solid)";
+                      e.currentTarget.style.color = "var(--text-primary)";
                     }}
                   >
                     ❌ Odstrániť playlist
@@ -619,7 +619,7 @@ export default function PlaylistSection() {
                     alignItems: "center",
                     transition: "background 0.2s ease",
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+                  onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-hover)")}
                   onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
                 >
                   <div style={{ color: "var(--text-secondary)", width: "20px", textAlign: "right", fontSize: "0.9rem" }}>
