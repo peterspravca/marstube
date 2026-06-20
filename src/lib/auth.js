@@ -122,5 +122,48 @@ export const authApi = {
       body: JSON.stringify({ video_id: videoId }),
     });
     return res.json();
+  },
+
+  async getPlaylists() {
+    const token = localStorage.getItem("mars_token");
+    if (!token) return { error: "Not logged in" };
+
+    const res = await fetch(`${API_URL}?action=get_playlists`, {
+      method: "GET",
+      headers: { 
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    return res.json();
+  },
+
+  async addPlaylist(playlistId, title = null) {
+    const token = localStorage.getItem("mars_token");
+    if (!token) return { error: "Not logged in" };
+
+    const res = await fetch(`${API_URL}?action=add_playlist`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ playlist_id: playlistId, title }),
+    });
+    return res.json();
+  },
+
+  async removePlaylist(playlistId) {
+    const token = localStorage.getItem("mars_token");
+    if (!token) return { error: "Not logged in" };
+
+    const res = await fetch(`${API_URL}?action=remove_playlist`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ playlist_id: playlistId }),
+    });
+    return res.json();
   }
 };

@@ -20,7 +20,7 @@ export default async function Home() {
             <span>Mars<span className="text-gradient">Tube</span></span>
           </h1>
         </div>
-        <div style={{ position: "fixed", top: "1.5rem", right: "2rem", zIndex: 1000, display: "flex", gap: "1rem", alignItems: "center" }}>
+        <div className="home-auth-wrapper">
           <ThemeToggle />
           <AuthButton />
         </div>

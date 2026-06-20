@@ -56,7 +56,7 @@ export default async function WatchPage({ searchParams }) {
         <div className="watch-search-wrapper">
           <SearchBar />
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
+        <div className="watch-auth-wrapper">
           <ThemeToggle />
           <AuthButton />
         </div>

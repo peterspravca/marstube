@@ -22,19 +22,60 @@ export default function PlaylistSection() {
   // --- Load from localStorage on mount ---
   useEffect(() => {
     try {
-      const savedPlaylists = localStorage.getItem(STORAGE_KEY_PLAYLISTS);
-      if (savedPlaylists) {
-        const parsed = JSON.parse(savedPlaylists);
-        setPlaylists(parsed);
-      }
-      // Migrate old single playlist format
-      const oldPlaylist = localStorage.getItem("martubeSavedPlaylist");
-      if (oldPlaylist && !savedPlaylists) {
-        const migrated = [{ id: oldPlaylist }];
-        setPlaylists(migrated);
-        localStorage.setItem(STORAGE_KEY_PLAYLISTS, JSON.stringify(migrated));
-        localStorage.removeItem("martubeSavedPlaylist");
-      }
+      const loadPlaylists = async () => {
+        let loadedPlaylists = [];
+        
+        const user = authApi.getUser();
+        if (user) {
+          try {
+            let dbPlaylists = await authApi.getPlaylists();
+            if (Array.isArray(dbPlaylists)) {
+              // Migrácia z localStorage ak je databáza prázdna
+              if (dbPlaylists.length === 0) {
+                const savedPlaylists = localStorage.getItem(STORAGE_KEY_PLAYLISTS);
+                if (savedPlaylists) {
+                  const localPls = JSON.parse(savedPlaylists);
+                  for (let i = 0; i < localPls.length; i++) {
+                    const p = localPls[i];
+                    if (p && p.id) {
+                      await authApi.addPlaylist(p.id, p.name || null);
+                    }
+                  }
+                  const newDbPls = await authApi.getPlaylists();
+                  if (Array.isArray(newDbPls)) dbPlaylists = newDbPls;
+                }
+              }
+
+              loadedPlaylists = dbPlaylists.map(p => ({
+                id: p.playlist_id,
+                name: p.title
+              }));
+              setPlaylists(loadedPlaylists);
+              return;
+            }
+          } catch (err) {
+            console.error("Error loading DB playlists:", err);
+          }
+        }
+        
+        // Fallback pre neprihlásených alebo ak zlyhá DB
+        const savedPlaylists = localStorage.getItem(STORAGE_KEY_PLAYLISTS);
+        if (savedPlaylists) {
+          loadedPlaylists = JSON.parse(savedPlaylists);
+          setPlaylists(loadedPlaylists);
+        }
+
+        // Migrate old single playlist format
+        const oldPlaylist = localStorage.getItem("martubeSavedPlaylist");
+        if (oldPlaylist && !savedPlaylists) {
+          const migrated = [{ id: oldPlaylist }];
+          setPlaylists(migrated);
+          localStorage.setItem(STORAGE_KEY_PLAYLISTS, JSON.stringify(migrated));
+          localStorage.removeItem("martubeSavedPlaylist");
+        }
+      };
+      
+      loadPlaylists();
 
       const loadFavorites = async () => {
         const user = authApi.getUser();
@@ -143,6 +184,12 @@ export default function PlaylistSection() {
     setActiveTab(cleanId);
     setAddInput("");
     setShowAddForm(false);
+    
+    // Sync to DB
+    const user = authApi.getUser();
+    if (user) {
+      authApi.addPlaylist(cleanId).catch(e => console.error("Error adding playlist to DB", e));
+    }
   };
 
   // --- Remove playlist ---
@@ -152,6 +199,12 @@ export default function PlaylistSection() {
     localStorage.setItem(STORAGE_KEY_PLAYLISTS, JSON.stringify(updated));
     if (activeTab === playlistId) {
       setActiveTab("favorites");
+    }
+    
+    // Sync to DB
+    const user = authApi.getUser();
+    if (user) {
+      authApi.removePlaylist(playlistId).catch(e => console.error("Error removing playlist from DB", e));
     }
   };
 
@@ -189,6 +242,12 @@ export default function PlaylistSection() {
         localStorage.setItem(STORAGE_KEY_PLAYLISTS, JSON.stringify(updated));
         return updated;
       });
+      
+      // Update DB if user logged in
+      const user = authApi.getUser();
+      if (user) {
+        authApi.addPlaylist(activeTab, playlistInfo.title).catch(e => console.error(e));
+      }
     }
   }, [playlistInfo, activeTab]);
 

@@ -63,6 +63,20 @@ try {
     ");
     echo "Tabuľka 'favorites' vytvorená (alebo už existuje).\n\n";
 
+    echo "Vytváram tabuľku 'playlists'...\n";
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS playlists (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            playlist_id VARCHAR(100) NOT NULL,
+            title VARCHAR(255) NULL,
+            added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_user_playlist (user_id, playlist_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ");
+    echo "Tabuľka 'playlists' vytvorená (alebo už existuje).\n\n";
+
     echo "✅ VŠETKO HOTOVO! Tabuľky boli úspešne vytvorené.\n";
     echo "Teraz môžeš zavrieť túto stránku a vyskúšať prihlásenie/registráciu na tvojom webe.";
 

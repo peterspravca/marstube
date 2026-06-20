@@ -351,7 +351,77 @@ try {
         echo json_encode(["success" => true]);
         break;
 
-    // 5. ZÍSKAŤ HISTÓRIU
+    // 5. PLAYLISTY
+    case 'get_playlists':
+        $tokenRaw = getBearerToken();
+        $payload = verifyToken($tokenRaw);
+        if (!$payload) {
+            echo json_encode(["error" => "Neplatný alebo chýbajúci token"]);
+            http_response_code(401);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("SELECT * FROM playlists WHERE user_id = ? ORDER BY added_at DESC");
+        $stmt->execute([$payload->user_id]);
+        $playlists = $stmt->fetchAll();
+        
+        echo json_encode($playlists);
+        break;
+
+    case 'add_playlist':
+        $tokenRaw = getBearerToken();
+        $payload = verifyToken($tokenRaw);
+        if (!$payload) {
+            echo json_encode(["error" => "Neplatný alebo chýbajúci token"]);
+            http_response_code(401);
+            exit;
+        }
+
+        $data = json_decode(file_get_contents("php://input"));
+        if (!isset($data->playlist_id)) {
+            echo json_encode(["error" => "Chýbajúce dáta"]);
+            exit;
+        }
+        
+        try {
+            $stmt = $pdo->prepare("INSERT IGNORE INTO playlists (user_id, playlist_id, title) VALUES (?, ?, ?)");
+            $stmt->execute([$payload->user_id, $data->playlist_id, isset($data->title) ? $data->title : null]);
+            
+            // Limit to 50 playlists per user
+            $stmt = $pdo->prepare("DELETE FROM playlists WHERE user_id = ? AND id NOT IN (
+                SELECT id FROM (
+                    SELECT id FROM playlists WHERE user_id = ? ORDER BY added_at DESC LIMIT 50
+                ) as t
+            )");
+            $stmt->execute([$payload->user_id, $payload->user_id]);
+
+            echo json_encode(["success" => true]);
+        } catch (\PDOException $e) {
+            echo json_encode(["error" => "Chyba pri ukladaní do playlistov"]);
+        }
+        break;
+
+    case 'remove_playlist':
+        $tokenRaw = getBearerToken();
+        $payload = verifyToken($tokenRaw);
+        if (!$payload) {
+            echo json_encode(["error" => "Neplatný alebo chýbajúci token"]);
+            http_response_code(401);
+            exit;
+        }
+
+        $data = json_decode(file_get_contents("php://input"));
+        if (!isset($data->playlist_id)) {
+            echo json_encode(["error" => "Chýbajúce dáta"]);
+            exit;
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM playlists WHERE user_id = ? AND playlist_id = ?");
+        $stmt->execute([$payload->user_id, $data->playlist_id]);
+        echo json_encode(["success" => true]);
+        break;
+
+    // 6. ZÍSKAŤ HISTÓRIU
     case 'get_history':
         $tokenRaw = getBearerToken();
         $payload = verifyToken($tokenRaw);
