@@ -6,7 +6,7 @@ import AuthButton from "@/components/AuthButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getTrending } from "@/lib/api";
 
-export const revalidate = 3600;
+export const revalidate = 0;
 
 export default async function Home() {
   const trendingVideos = await getTrending();
