@@ -7,7 +7,7 @@
   box-shadow: var(--shadow-glass);
   border-radius: 50px;
   overflow: hidden;
-  border: 2px solid var(--border-glass);
+  border: 2px solid var(--accent-primary);
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

@@ -202,24 +202,101 @@ try {
         $email = trim($data->email);
         $code = trim($data->code);
         
-        $stmt = $pdo->prepare("SELECT id, verification_code FROM users WHERE email = ? AND is_verified = 0");
+        $stmt = $pdo->prepare("SELECT id, verification_code, is_verified FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
         
         if (!$user) {
-            echo json_encode(["error" => "Účet sa nenašiel alebo je už overený."]);
+            echo json_encode(["error" => "Používateľ nenájdený."]);
+            exit;
+        }
+        if ($user['is_verified']) {
+            echo json_encode(["error" => "Tento e-mail už bol overený."]);
+            exit;
+        }
+        if ($user['verification_code'] !== $code) {
+            echo json_encode(["error" => "Neplatný overovací kód."]);
             exit;
         }
         
-        if ($user['verification_code'] === $code) {
-            $stmt = $pdo->prepare("UPDATE users SET is_verified = 1, verification_code = NULL WHERE id = ?");
-            $stmt->execute([$user['id']]);
+        $stmt = $pdo->prepare("UPDATE users SET is_verified = 1, verification_code = NULL WHERE id = ?");
+        $stmt->execute([$user['id']]);
+        
+        $token = createToken($user['id'], $email);
+        echo json_encode([
+            "success" => true,
+            "token" => $token,
+            "email" => $email
+        ]);
+        break;
+
+    // 2.1 FORGOT PASSWORD (ZABUDNUTÉ HESLO)
+    case 'forgot_password':
+        if (!isset($data->email)) {
+            echo json_encode(["error" => "Chýba e-mail."]);
+            exit;
+        }
+        $email = trim($data->email);
+
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        // Always return success to prevent email enumeration attacks
+        if (!$user) {
+            echo json_encode(["success" => true, "message" => "Ak e-mail existuje, poslali sme odkaz na obnovu."]);
+            exit;
+        }
+
+        // Generate token
+        $reset_token = bin2hex(random_bytes(32));
+        // Token expires in 1 hour
+        $reset_expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $stmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?");
+        if ($stmt->execute([$reset_token, $reset_expires, $user['id']])) {
+            $reset_link = "https://marstube.vercel.app/reset-password?token=" . urlencode($reset_token);
+            $subject = "Obnova hesla - MarsTube";
+            $message = "Zaznamenali sme žiadosť o obnovu hesla pre váš účet na MarsTube.\n\nKliknite na tento odkaz pre nastavenie nového hesla:\n" . $reset_link . "\n\nTento odkaz platí 1 hodinu.\n\nAk ste o zmenu hesla nežiadali, tento e-mail môžete ignorovať.";
             
-            // Vygenerujeme rovno token aby bol prihlásený
-            $token = createToken($user['id'], $email);
-            echo json_encode(["success" => true, "token" => $token, "email" => $email]);
+            try {
+                send_mail_smtp($email, $subject, $message);
+                echo json_encode(["success" => true, "message" => "Odkaz na obnovu hesla bol odoslaný."]);
+            } catch (Exception $e) {
+                echo json_encode(["error" => "Chyba pri odosielaní e-mailu."]);
+            }
         } else {
-            echo json_encode(["error" => "Neplatný overovací kód."]);
+            echo json_encode(["error" => "Chyba pri ukladaní tokenu."]);
+        }
+        break;
+
+    // 2.2 RESET PASSWORD (NASTAVENIE NOVÉHO HESLA)
+    case 'reset_password':
+        if (!isset($data->token) || !isset($data->password)) {
+            echo json_encode(["error" => "Chýba token alebo nové heslo."]);
+            exit;
+        }
+        
+        $token = $data->token;
+        $password = $data->password;
+        
+        // Find user by valid token
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()");
+        $stmt->execute([$token]);
+        $user = $stmt->fetch();
+        
+        if (!$user) {
+            echo json_encode(["error" => "Neplatný alebo expirovaný odkaz na obnovu hesla."]);
+            exit;
+        }
+        
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        
+        $stmt = $pdo->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_expires = NULL WHERE id = ?");
+        if ($stmt->execute([$hash, $user['id']])) {
+            echo json_encode(["success" => true, "message" => "Heslo bolo úspešne zmenené."]);
+        } else {
+            echo json_encode(["error" => "Chyba pri aktualizácii hesla."]);
         }
         break;
 
