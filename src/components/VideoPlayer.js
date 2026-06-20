@@ -201,7 +201,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
       try {
         // 1. Skontrolujeme, či už súbor existuje na FTP
-        const checkRes = await fetch(`https://marso.sk/play/download.php?action=status&filename=${filename}`);
+        const checkRes = await fetch(`https://marso.sk/play/download.php?action=status&filename=${filename}&token=MARSTUBE_API_SECRET_2026`);
         const checkData = await checkRes.json();
 
         if (!active) return;
@@ -224,7 +224,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         setLoadingState("downloading");
         setDownloadProgress("Pripravujem prehrávanie (sťahujem súbor na server, zvyčajne to trvá 2-5 sekúnd)...");
 
-        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}&ua=${encodeURIComponent(sourceUA || '')}`);
+        const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}&ua=${encodeURIComponent(sourceUA || '')}&token=MARSTUBE_API_SECRET_2026`);
         const dlData = await dlRes.json();
 
         if (!active) return;
@@ -520,7 +520,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               )}
             </button>
             <a 
-              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}&token=MARSTUBE_API_SECRET_2026`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -542,7 +542,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             </a>
             {streamData.audioUrl && (
               <a 
-                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
+                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}&token=MARSTUBE_API_SECRET_2026`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',

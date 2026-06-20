@@ -3,6 +3,81 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
+// --- BEZPECNOSTNA OCHRANA ---
+$action = isset($_GET['action']) ? $_GET['action'] : 'download';
+if ($action !== 'version') {
+    // 1. Kontrola povodu a tajneho kluca
+    $token = isset($_GET['token']) ? $_GET['token'] : '';
+    $secret = 'MARSTUBE_API_SECRET_2026';
+    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+    
+    $is_allowed_origin = false;
+    $allowed_hosts = ['marstube.vercel.app', 'localhost:3000', 'marso.sk'];
+    foreach ($allowed_hosts as $host) {
+        if ((!empty($referer) && strpos($referer, $host) !== false) || (!empty($origin) && strpos($origin, $host) !== false)) {
+            $is_allowed_origin = true;
+            break;
+        }
+    }
+    
+    if (!$is_allowed_origin && $token !== $secret) {
+        http_response_code(403);
+        echo json_encode(["error" => "Access denied. Zly token alebo povod."]);
+        exit;
+    }
+    
+    // 2. Limit poctu stahovani pre jednu IP adresu (Rate Limit: 3 stahovania za minutu)
+    // Aplikujeme len na "download" (samotne stahovanie z internetu), nie na bezne kontroly stavu
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
+    if ($ip !== 'unknown' && $action === 'download') {
+        $limit_file = 'rate_limits.json';
+        $limit = 3;
+        $window = 60;
+        $now = time();
+        
+        $data = [];
+        if (file_exists($limit_file)) {
+            $content = file_get_contents($limit_file);
+            if ($content) {
+                $data = json_decode($content, true) ?: [];
+            }
+        }
+        
+        $requests = isset($data[$ip]) ? $data[$ip] : [];
+        $valid_requests = [];
+        foreach ($requests as $time_req) {
+            if ($now - $time_req < $window) {
+                $valid_requests[] = $time_req;
+            }
+        }
+        
+        if (count($valid_requests) >= $limit) {
+            http_response_code(429);
+            echo json_encode(["error" => "Prilis vela poziadaviek. Skuste to neskor."]);
+            exit;
+        }
+        
+        $valid_requests[] = $now;
+        $data[$ip] = $valid_requests;
+        
+        // Obcas premazeme stare IP (sanca 1:10)
+        if (rand(1, 10) === 1) {
+            foreach ($data as $k => $reqs) {
+                $valid = [];
+                foreach ($reqs as $t) {
+                    if ($now - $t < $window) $valid[] = $t;
+                }
+                if (empty($valid)) unset($data[$k]);
+                else $data[$k] = $valid;
+            }
+        }
+        
+        file_put_contents($limit_file, json_encode($data));
+    }
+}
+// --- KONIEC OCHRANY ---
+
 
 // Smaž súbory staršie ako 1 hodinu (3600 sekúnd)
 $files = array_merge(glob('*_video.mp4'), glob('*_audio.m4a'), glob('*_audio.mp3'));
