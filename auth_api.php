@@ -283,6 +283,14 @@ try {
         break;
 
     case 'get_favorites':
+        $tokenRaw = getBearerToken();
+        $payload = verifyToken($tokenRaw);
+        if (!$payload) {
+            echo json_encode(["error" => "Neplatný alebo chýbajúci token"]);
+            http_response_code(401);
+            exit;
+        }
+
         $stmt = $pdo->prepare("SELECT * FROM favorites WHERE user_id = ? ORDER BY added_at DESC");
         $stmt->execute([$payload->user_id]);
         $favorites = $stmt->fetchAll();
@@ -291,6 +299,14 @@ try {
         break;
 
     case 'add_favorite':
+        $tokenRaw = getBearerToken();
+        $payload = verifyToken($tokenRaw);
+        if (!$payload) {
+            echo json_encode(["error" => "Neplatný alebo chýbajúci token"]);
+            http_response_code(401);
+            exit;
+        }
+
         $data = json_decode(file_get_contents("php://input"));
         if (!isset($data->video_id) || !isset($data->title)) {
             echo json_encode(["error" => "Chýbajúce dáta"]);
@@ -307,6 +323,14 @@ try {
         break;
 
     case 'remove_favorite':
+        $tokenRaw = getBearerToken();
+        $payload = verifyToken($tokenRaw);
+        if (!$payload) {
+            echo json_encode(["error" => "Neplatný alebo chýbajúci token"]);
+            http_response_code(401);
+            exit;
+        }
+
         $data = json_decode(file_get_contents("php://input"));
         if (!isset($data->video_id)) {
             echo json_encode(["error" => "Chýbajúce dáta"]);
