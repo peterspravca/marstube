@@ -271,10 +271,10 @@ try {
         $stmt = $pdo->prepare("INSERT INTO watch_history (user_id, video_id, title, thumbnail_url) VALUES (?, ?, ?, ?)");
         $stmt->execute([$payload->user_id, $data->video_id, $data->title, isset($data->thumbnail_url) ? $data->thumbnail_url : null]);
         
-        // Zmazať všetko okrem posledných 50 záznamov pre daného používateľa
+        // Zmazať všetko okrem posledných 20 záznamov pre daného používateľa
         $stmt = $pdo->prepare("DELETE FROM watch_history WHERE user_id = ? AND id NOT IN (
             SELECT id FROM (
-                SELECT id FROM watch_history WHERE user_id = ? ORDER BY watched_at DESC LIMIT 50
+                SELECT id FROM watch_history WHERE user_id = ? ORDER BY watched_at DESC LIMIT 20
             ) as t
         )");
         $stmt->execute([$payload->user_id, $payload->user_id]);
@@ -296,7 +296,7 @@ try {
             exit;
         }
         
-        $stmt = $pdo->prepare("SELECT * FROM watch_history WHERE user_id = ? ORDER BY watched_at DESC LIMIT 50");
+        $stmt = $pdo->prepare("SELECT * FROM watch_history WHERE user_id = ? ORDER BY watched_at DESC LIMIT 20");
         $stmt->execute([$payload->user_id]);
         $history = $stmt->fetchAll();
         
