@@ -471,7 +471,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           {finalNextUrl ? (
             <button 
               onClick={() => router.push(finalNextUrl)}
-              style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
+              style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: '#ffffff', cursor: 'pointer', fontWeight: 'bold' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 Nasledujúca
