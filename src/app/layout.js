@@ -18,7 +18,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  metadataBase: new URL("https://marso.sk"),
+  metadataBase: new URL("https://marstube.vercel.app"),
   title: {
     default: "MarsTube - Ad-Free YouTube",
     template: "%s | MarsTube"
@@ -51,11 +51,11 @@ export const metadata = {
   openGraph: {
     title: "MarsTube - Prémiový Ad-Free YouTube",
     description: "Zážitok zo sledovania videí a hudby bez otravných reklám a prerušení. Tvoj nový obľúbený prehrávač.",
-    url: "https://marso.sk",
+    url: "https://marstube.vercel.app",
     siteName: "MarsTube",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://marstube.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "MarsTube Promotional Image",
@@ -68,7 +68,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "MarsTube - Ad-Free YouTube",
     description: "Sleduj videá a počúvaj hudbu bez reklám.",
-    images: ["/og-image.png"],
+    images: ["https://marstube.vercel.app/og-image.png"],
   },
   other: {
     "geo.region": "SK",
