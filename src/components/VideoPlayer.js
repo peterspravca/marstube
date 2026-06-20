@@ -110,17 +110,16 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           const listArr = JSON.parse(saved);
           const currentIndex = listArr.findIndex(f => f.id === streamData.id || f.video_id === streamData.id);
           
-          if (currentIndex > 0) {
-            const prevItem = listArr[currentIndex - 1];
+          if (listArr.length > 0 && currentIndex >= 0) {
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : listArr.length - 1;
+            const prevItem = listArr[prevIndex];
             setClientPrevUrl(`/watch?v=${prevItem.id || prevItem.video_id}&list=${listId}`);
-          } else {
-            setClientPrevUrl(null);
-          }
 
-          if (currentIndex >= 0 && currentIndex < listArr.length - 1) {
-            const nextItem = listArr[currentIndex + 1];
+            const nextIndex = currentIndex < listArr.length - 1 ? currentIndex + 1 : 0;
+            const nextItem = listArr[nextIndex];
             setClientNextUrl(`/watch?v=${nextItem.id || nextItem.video_id}&list=${listId}`);
           } else {
+            setClientPrevUrl(null);
             setClientNextUrl(null);
           }
         }
