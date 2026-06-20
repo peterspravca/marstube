@@ -217,13 +217,8 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     };
   }, [streamData?.id, mode]);
 
-  // Ref callback to set muted immediately on mount (React muted prop is buggy)
-  const setMediaRef = (el) => {
-    videoRef.current = el;
-    if (el) {
-      el.muted = true;
-    }
-  };
+  // React handles muted prop correctly now, and we manually manage it in useEffect for autoplay
+  // so we don't need the inline callback ref anymore.
 
   // Force playback when URL is ready
   useEffect(() => {
@@ -356,7 +351,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               </div>
             </div>
             <audio
-              ref={setMediaRef}
+              ref={videoRef}
               src={streamUrl}
               controls
               autoPlay
@@ -369,7 +364,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           </div>
         ) : (
           <video
-            ref={setMediaRef}
+            ref={videoRef}
             src={streamUrl}
             controls
             autoPlay
