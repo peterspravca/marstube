@@ -293,7 +293,7 @@ if ($is_mp3) {
 
     $ffmpeg_path = get_ffmpeg_path();
     if ($ffmpeg_path !== null) {
-        $ffmpeg_cmd = escapeshellarg($ffmpeg_path) . " -y -i " . escapeshellarg($download_target) . " -codec:a libmp3lame -qscale:a 2 " . escapeshellarg($filename) . " 2>&1";
+        $ffmpeg_cmd = escapeshellarg($ffmpeg_path) . " -y -i " . escapeshellarg($download_target) . " -codec:a libmp3lame -b:a 320k " . escapeshellarg($filename) . " 2>&1";
         log_msg("Spustam prikaz: $ffmpeg_cmd");
 
         $ffmpeg_out = [];
