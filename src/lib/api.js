@@ -12,15 +12,15 @@ export async function getTrending() {
     
     // Zoznam hudobných kľúčových slov pre náhodný výber, aby sme mali vždy len hudbu
     const musicQueries = [
-      "top music hits 2026",
+      "top radio hits 2026",
       "new pop songs playlist",
-      "best electronic music mix",
-      "chill lofi beats",
+      "best electronic dance music edm",
+      "techno music club mix",
       "top chart songs official",
       "melodic techno house mix",
-      "popular music videos",
-      "trending pop songs",
-      "synthwave retrowave mix",
+      "popular radio hits",
+      "trending dance songs",
+      "tech house bass mix",
       "deep house vocal mix"
     ];
     
