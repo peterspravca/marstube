@@ -13,13 +13,13 @@ export async function getTrending() {
     // Zoznam hudobných kľúčových slov pre náhodný výber, aby sme mali vždy len hudbu
     const musicQueries = [
       "top radio hits 2026",
-      "new pop songs playlist",
       "best electronic dance music edm",
       "techno music club mix",
-      "top chart songs official",
+      "david guetta top hits mix",
+      "hugel club house mix",
       "melodic techno house mix",
       "popular radio hits",
-      "trending dance songs",
+      "trending dance songs tiesto",
       "tech house bass mix",
       "deep house vocal mix"
     ];
