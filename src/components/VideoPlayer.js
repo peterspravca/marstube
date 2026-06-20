@@ -271,8 +271,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
   return (
     <div className={styles.playerContainer}>
-      {/* Tlačidlá prepínania Video / Hudba */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
         <button 
           onClick={() => changeMode("video")}
           style={{
