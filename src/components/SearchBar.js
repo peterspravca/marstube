@@ -92,20 +92,20 @@ export default function SearchBar() {
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          background: 'var(--bg-glass)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#ffffff'
+          color: 'var(--text-primary)'
         }}>
           <div style={{
             width: '60px',
             height: '60px',
-            border: '4px solid rgba(255,255,255,0.1)',
+            border: '4px solid var(--border-glass-solid)',
             borderLeftColor: 'var(--accent-primary, #a855f7)',
             borderRadius: '50%',
             animation: 'searchSpinner 1s linear infinite',
