@@ -21,7 +21,10 @@ export async function getTrending() {
       "popular radio hits",
       "trending dance songs tiesto",
       "tech house bass mix",
-      "deep house vocal mix"
+      "deep house vocal mix",
+      "trending dance songs",
+      "new pop songs playlist",
+      "top chart songs official"
     ];
     
     // Náhodne vyberieme jedno hudobné kľúčové slovo
