@@ -1,7 +1,12 @@
-import { Montserrat } from "next/font/google";
+import { JetBrains_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ThemeProvider from "@/components/ThemeProvider";
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+});
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -25,7 +30,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="sk" className={`${montserrat.variable}`} suppressHydrationWarning>
+    <html lang="sk" className={`${jetbrainsMono.variable} ${montserrat.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="data-theme" defaultTheme="dark">
           <ServiceWorkerRegister />
