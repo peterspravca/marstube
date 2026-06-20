@@ -12,16 +12,16 @@ export async function getTrending() {
     
     // Zoznam hudobných kľúčových slov pre náhodný výber, aby sme mali vždy len hudbu
     const musicQueries = [
-      "top radio hits 2026",
-      "best electronic dance music edm",
-      "techno music club mix",
-      "david guetta top hits mix",
-      "hugel club house mix",
-      "melodic techno house mix",
+      "top radio hits 2026 song",
+      "best electronic dance music edm track",
+      "techno music official video",
+      "david guetta new song",
+      "hugel new track",
+      "melodic techno single",
       "popular radio hits",
       "trending dance songs tiesto",
-      "tech house bass mix",
-      "deep house vocal mix",
+      "tech house track",
+      "deep house official music video",
       "trending dance songs",
       "new pop songs playlist",
       "top chart songs official"
@@ -30,11 +30,19 @@ export async function getTrending() {
     // Náhodne vyberieme jedno hudobné kľúčové slovo
     const randomQuery = musicQueries[Math.floor(Math.random() * musicQueries.length)];
     
-    // Vyhľadáme videá
-    const searchResult = await yt.search(randomQuery, { type: 'video' });
+    // Vyhľadáme videá, požiadame YT o krátke (do 4 min) ak to knižnica podporuje
+    const searchResult = await yt.search(randomQuery, { type: 'video', duration: 'short' });
     
-    // Zoberieme maximálne 20 výsledkov, aby toho nebolo zbytočne veľa
-    const videos = (searchResult.videos || []).slice(0, 20);
+    // Pre istotu vyfiltrujeme manuálne: žiadne LIVE streamy a max 6 minút (360 sekúnd)
+    const filteredVideos = (searchResult.videos || []).filter(v => {
+      if (v.is_live) return false;
+      const durationSeconds = v.duration?.seconds || 0;
+      // Niektoré videá nemusia mať duration správne načítané, ale ak majú, obmedzíme na 360s
+      return durationSeconds > 0 && durationSeconds <= 360;
+    });
+    
+    // Zoberieme maximálne 20 výsledkov
+    const videos = filteredVideos.slice(0, 20);
     
     // Vrátime pole videí so štruktúrou prispôsobenou nášmu VideoCard
     return videos.map(v => ({
