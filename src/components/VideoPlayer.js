@@ -285,7 +285,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             fontWeight: 'bold',
             fontSize: '0.95rem',
             background: mode === 'video' ? 'var(--accent-gradient)' : 'var(--button-bg)',
-            color: 'var(--text-primary)',
+            color: mode === 'video' ? '#ffffff' : 'var(--text-primary)',
             boxShadow: mode === 'video' ? 'var(--shadow-glass)' : 'none',
             border: '1px solid var(--border-glass-solid)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -310,7 +310,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             fontWeight: 'bold',
             fontSize: '0.95rem',
             background: mode === 'audio' ? 'var(--accent-gradient)' : 'var(--button-bg)',
-            color: 'var(--text-primary)',
+            color: mode === 'audio' ? '#ffffff' : 'var(--text-primary)',
             boxShadow: mode === 'audio' ? 'var(--shadow-glass)' : 'none',
             border: '1px solid var(--border-glass-solid)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
