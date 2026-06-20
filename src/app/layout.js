@@ -25,7 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="sk" className={`${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="sk" className={`${montserrat.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="data-theme" defaultTheme="dark">
           <ServiceWorkerRegister />
