@@ -255,10 +255,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             cursor: 'pointer',
             fontWeight: 'bold',
             fontSize: '0.95rem',
-            background: mode === 'video' ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.08)',
-            color: 'white',
+            background: mode === 'video' ? 'var(--accent-gradient)' : 'var(--button-bg)',
+            color: 'var(--text-primary)',
             boxShadow: mode === 'video' ? 'var(--shadow-glass)' : 'none',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid var(--border-glass-solid)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
@@ -273,10 +273,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             cursor: 'pointer',
             fontWeight: 'bold',
             fontSize: '0.95rem',
-            background: mode === 'audio' ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.08)',
-            color: 'white',
+            background: mode === 'audio' ? 'var(--accent-gradient)' : 'var(--button-bg)',
+            color: 'var(--text-primary)',
             boxShadow: mode === 'audio' ? 'var(--shadow-glass)' : 'none',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid var(--border-glass-solid)',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
@@ -364,11 +364,11 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       
       {/* Ovládacie prvky pre Playlist */}
       {(prevVideoUrl || nextVideoUrl) && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '0 0 12px 12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--bg-glass)', borderRadius: '0 0 12px 12px' }}>
           {prevVideoUrl ? (
             <button 
               onClick={() => router.push(prevVideoUrl)}
-              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
+              style={{ background: 'var(--button-bg)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
             >
               ⏮ Predchádzajúca
             </button>
@@ -377,7 +377,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           {nextVideoUrl ? (
             <button 
               onClick={() => router.push(nextVideoUrl)}
-              style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
+              style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
             >
               Nasledujúca ⏭
             </button>
@@ -405,9 +405,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
                 borderRadius: '16px',
                 fontSize: '0.85rem',
                 fontWeight: 'bold',
-                background: isFavorite ? 'rgba(255, 77, 109, 0.15)' : 'rgba(255,255,255,0.06)',
-                color: isFavorite ? '#ff4d6d' : 'white',
-                border: isFavorite ? '1px solid rgba(255, 77, 109, 0.4)' : '1px solid rgba(255,255,255,0.1)',
+                background: isFavorite ? 'rgba(255, 77, 109, 0.15)' : 'var(--button-bg)',
+                color: isFavorite ? '#ff4d6d' : 'var(--text-primary)',
+                border: isFavorite ? '1px solid rgba(255, 77, 109, 0.4)' : '1px solid var(--border-glass-solid)',
                 cursor: 'pointer',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 transform: 'scale(1)',
@@ -429,9 +429,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
                 fontSize: '0.85rem',
                 fontWeight: 'bold',
                 textDecoration: 'none',
-                background: 'rgba(255,255,255,0.06)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--button-bg)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-glass-solid)',
                 transition: 'all 0.2s'
               }}
               title="Stiahnuť video (MP4)"

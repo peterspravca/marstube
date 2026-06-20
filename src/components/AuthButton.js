@@ -36,11 +36,11 @@ export default function AuthButton() {
           onClick={handleLogout}
           style={{
             padding: "0.5rem 1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
-            background: "rgba(255,255,255,0.05)", color: "white", cursor: "pointer",
+            background: "var(--button-bg)", color: "var(--text-primary)", cursor: "pointer",
             transition: "all 0.2s"
           }}
           onMouseOver={e => e.currentTarget.style.background = "rgba(255,70,70,0.2)"}
-          onMouseOut={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+          onMouseOut={e => e.currentTarget.style.background = "var(--button-bg)"}
         >
           Odhlásiť sa
         </button>
