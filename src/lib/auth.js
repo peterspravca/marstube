@@ -165,5 +165,23 @@ export const authApi = {
       body: JSON.stringify({ playlist_id: playlistId }),
     });
     return res.json();
+  },
+
+  async forgotPassword(email) {
+    const res = await fetch(`${API_URL}?action=forgot_password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    return res.json();
+  },
+
+  async resetPassword(token, password) {
+    const res = await fetch(`${API_URL}?action=reset_password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password }),
+    });
+    return res.json();
   }
 };

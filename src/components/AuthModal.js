@@ -8,6 +8,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
   const [verifyCode, setVerifyCode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -20,7 +21,14 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
     setLoading(true);
 
     try {
-      if (showVerify) {
+      if (showForgot) {
+        const data = await authApi.forgotPassword(email);
+        if (data.error) throw new Error(data.error);
+        if (data.success) {
+          setSuccess("Ak tento e-mail evidujeme, poslali sme naň odkaz na obnovu hesla.");
+          // keep showForgot true so they can read the success message
+        }
+      } else if (showVerify) {
         const data = await authApi.verify(email, verifyCode);
         if (data.error) throw new Error(data.error);
         if (data.success) {
@@ -75,7 +83,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
         >✕</button>
         
         <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          {showVerify ? "Overenie E-mailu" : (isLogin ? "Prihlásenie" : "Registrácia")} do Mars<span className="text-gradient">Tube</span>
+          {showForgot ? "Obnova hesla" : (showVerify ? "Overenie E-mailu" : (isLogin ? "Prihlásenie" : "Registrácia"))} do Mars<span className="text-gradient">Tube</span>
         </h2>
 
         {error && <div style={{ color: "#ff4d4d", background: "rgba(255,70,70,0.1)", padding: "0.8rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.9rem" }}>{error}</div>}
@@ -130,7 +138,28 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               )}
             </button>
           </div>
+              <div style={{ textAlign: "right", marginTop: "-0.5rem" }}>
+                <button 
+                  type="button"
+                  onClick={() => { setShowForgot(true); setError(""); setSuccess(""); }}
+                  style={{ background: "none", border: "none", color: "var(--accent-primary)", cursor: "pointer", fontSize: "0.9rem" }}
+                >
+                  Zabudli ste heslo?
+                </button>
+              </div>
             </>
+          ) : showForgot ? (
+            <input 
+              type="email" 
+              placeholder="Váš e-mail" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)}
+              required
+              style={{
+                padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
+                background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "1rem"
+              }}
+            />
           ) : (
             <input 
               type="text" 
@@ -154,11 +183,11 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               opacity: loading ? 0.7 : 1
             }}
           >
-            {loading ? "Čakajte..." : (showVerify ? "Overiť a prihlásiť" : (isLogin ? "Prihlásiť sa" : "Zaregistrovať sa"))}
+            {loading ? "Čakajte..." : (showForgot ? "Odoslať odkaz na obnovu" : (showVerify ? "Overiť a prihlásiť" : (isLogin ? "Prihlásiť sa" : "Zaregistrovať sa")))}
           </button>
         </form>
 
-        {!showVerify && (
+        {!showVerify && !showForgot && (
           <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
             {isLogin ? "Nemáte ešte účet?" : "Už máte účet?"}
             <button 
@@ -169,6 +198,20 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               }}
             >
               {isLogin ? "Zaregistrujte sa" : "Prihláste sa"}
+            </button>
+          </div>
+        )}
+
+        {showForgot && (
+          <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            <button 
+              onClick={() => { setShowForgot(false); setError(""); setSuccess(""); }}
+              style={{ 
+                background: "none", border: "none", color: "var(--text-primary)", 
+                fontWeight: "bold", cursor: "pointer" 
+              }}
+            >
+              Späť na prihlásenie
             </button>
           </div>
         )}
