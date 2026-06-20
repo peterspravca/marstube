@@ -97,6 +97,21 @@ function get_ffmpeg_path() {
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'download';
 $filename = isset($_GET['filename']) ? $_GET['filename'] : '';
+$title = isset($_GET['title']) ? $_GET['title'] : '';
+
+function get_attachment_filename($filename, $title) {
+    if (empty($title)) {
+        return $filename;
+    }
+    // Povolime len bezpecne znaky pre nazov suboru (pismena, cisla, medzery, pomlcky, bodky, zatvorky)
+    $safe_title = preg_replace('/[^\p{L}\p{N}\s\-\_\.\(\)\[\]]+/u', '', $title);
+    $safe_title = trim($safe_title);
+    if (empty($safe_title)) {
+        return $filename;
+    }
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    return $safe_title . '.' . $ext;
+}
 
 log_msg("=== ZACATOK REQ === Action: $action, Filename: $filename");
 
@@ -158,7 +173,8 @@ if (file_exists($filename)) {
             log_msg("SAVE ACTION: Subor existuje, zacinam odosielanie...");
             header("Content-Description: File Transfer");
             header("Content-Type: " . get_mime_type($filename));
-            header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+            $out_name = get_attachment_filename($filename, $title);
+            header("Content-Disposition: attachment; filename=\"" . $out_name . "\"");
             header("Access-Control-Expose-Headers: Content-Disposition");
             header("Expires: 0");
             header("Cache-Control: must-revalidate");
@@ -327,7 +343,8 @@ if ($action === 'save') {
     log_msg("SAVE ACTION: Spustam odosielanie...");
     header("Content-Description: File Transfer");
     header("Content-Type: " . get_mime_type($filename));
-    header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+    $out_name = get_attachment_filename($filename, $title);
+    header("Content-Disposition: attachment; filename=\"" . $out_name . "\"");
     header("Access-Control-Expose-Headers: Content-Disposition");
     header("Expires: 0");
     header("Cache-Control: must-revalidate");

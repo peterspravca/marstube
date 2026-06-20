@@ -484,7 +484,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               )}
             </button>
             <a 
-              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -506,7 +506,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             </a>
             {streamData.audioUrl && (
               <a 
-                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
+                href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
