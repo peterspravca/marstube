@@ -55,10 +55,11 @@ export const metadata = {
     siteName: "MarsTube",
     images: [
       {
-        url: "https://marstube.vercel.app/og-image.png",
+        url: "https://marstube.vercel.app/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "MarsTube Promotional Image",
+        type: "image/jpeg",
       },
     ],
     locale: "sk_SK",
@@ -68,7 +69,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "MarsTube - Ad-Free YouTube",
     description: "Sleduj videá a počúvaj hudbu bez reklám.",
-    images: ["https://marstube.vercel.app/og-image.png"],
+    images: ["https://marstube.vercel.app/og-image.jpg"],
   },
   other: {
     "geo.region": "SK",
