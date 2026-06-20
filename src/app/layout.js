@@ -1,10 +1,10 @@
-import { JetBrains_Mono } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ThemeProvider from "@/components/ThemeProvider";
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
