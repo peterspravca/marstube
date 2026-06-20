@@ -105,7 +105,16 @@ export default function RootLayout({ children }) {
       <body>
         <ThemeProvider attribute="data-theme" defaultTheme="dark">
           <ServiceWorkerRegister />
-          {children}
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <div style={{ flex: '1' }}>
+              {children}
+            </div>
+            <footer style={{ textAlign: 'center', padding: '1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-glass-solid)' }}>
+              <a href="https://marso.sk/portfolio/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'inherit'}>
+                &copy; 2026 Peter Maršo. Všetky práva vyhradené.
+              </a>
+            </footer>
+          </div>
         </ThemeProvider>
       </body>
     </html>
