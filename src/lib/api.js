@@ -9,9 +9,32 @@ const CLIENT_USER_AGENTS = {
 export async function getTrending() {
   try {
     const yt = await getYT();
-    const trending = await yt.search('trending', { type: 'video' });
+    
+    // Zoznam hudobných kľúčových slov pre náhodný výber, aby sme mali vždy len hudbu
+    const musicQueries = [
+      "top music hits 2026",
+      "new pop songs playlist",
+      "best electronic music mix",
+      "chill lofi beats",
+      "top chart songs official",
+      "melodic techno house mix",
+      "popular music videos",
+      "trending pop songs",
+      "synthwave retrowave mix",
+      "deep house vocal mix"
+    ];
+    
+    // Náhodne vyberieme jedno hudobné kľúčové slovo
+    const randomQuery = musicQueries[Math.floor(Math.random() * musicQueries.length)];
+    
+    // Vyhľadáme videá
+    const searchResult = await yt.search(randomQuery, { type: 'video' });
+    
+    // Zoberieme maximálne 20 výsledkov, aby toho nebolo zbytočne veľa
+    const videos = (searchResult.videos || []).slice(0, 20);
+    
     // Vrátime pole videí so štruktúrou prispôsobenou nášmu VideoCard
-    return (trending.videos || []).map(v => ({
+    return videos.map(v => ({
       id: v.id,
       url: `/watch?v=${v.id}`,
       title: v.title?.text || v.title || "Neznámy názov",
