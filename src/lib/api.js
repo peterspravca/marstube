@@ -10,31 +10,34 @@ export async function getTrending() {
   try {
     const yt = await getYT();
     
-    // Zoznam hudobných kľúčových slov pre náhodný výber, aby sme mali vždy len hudbu
+    // Zoznam hudobných kľúčových slov pre náhodný výber, presne zameraných na oficiálne hudobné videá (nie mixy)
     const musicQueries = [
-      "top radio hits 2026 song",
-      "best electronic dance music edm track",
-      "techno music official video",
-      "david guetta new song",
-      "hugel new track",
-      "melodic techno single",
-      "popular radio hits",
-      "trending dance songs tiesto",
-      "tech house track",
-      "deep house official music video",
-      "trending dance songs",
-      "new pop songs playlist",
-      "top chart songs official"
+      "david guetta official video",
+      "hugel official video",
+      "tiesto official video",
+      "fisher official video",
+      "meduza official video",
+      "james hype official video",
+      "dom dolla official video",
+      "john summit official video",
+      "calvin harris official video",
+      "alok official video",
+      "robin schulz official video",
+      "lost frequencies official video"
     ];
     
     // Náhodne vyberieme jedno hudobné kľúčové slovo
     const randomQuery = musicQueries[Math.floor(Math.random() * musicQueries.length)];
     
-    // Vyhľadáme videá, požiadame YT o krátke (do 4 min) ak to knižnica podporuje
-    const searchResult = await yt.search(randomQuery, { type: 'video', duration: 'short' });
+    // Vyhľadáme videá
+    const searchResult = await yt.search(randomQuery, { type: 'video' });
     
-    // Vyfiltrujeme iba LIVE streamy. Dĺžku už neriešime, keďže sme dali parameter duration: 'short'
-    const filteredVideos = (searchResult.videos || []).filter(v => !v.is_live);
+    // Prísny ale bezpečný filter: iba videá, ktoré MAJÚ známu dĺžku a sú pod 6 minút.
+    const filteredVideos = (searchResult.videos || []).filter(v => {
+      if (v.is_live) return false;
+      const sec = v.duration?.seconds;
+      return typeof sec === 'number' && sec > 0 && sec <= 360;
+    });
     
     // Zoberieme maximálne 20 výsledkov
     const videos = filteredVideos.slice(0, 20);
