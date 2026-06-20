@@ -144,9 +144,8 @@ export async function getVideoStream(videoId) {
         console.warn(`Client ${client} failed to get info:`, e.message);
       }
     }
-    // Fallback: iOS audio formats get blocked (403 Forbidden) on the server,
-    // so we fall back to the working ANDROID/WEB combined format stream which downloads successfully.
-    if (!audioUrl || chosenAudioClient === 'IOS') {
+    // Fallback: If no audio format could be found at all, fallback to the combined video format.
+    if (!audioUrl) {
       audioUrl = videoUrl;
       chosenAudioClient = chosenVideoClient;
     }
