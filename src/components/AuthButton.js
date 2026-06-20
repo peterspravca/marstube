@@ -67,6 +67,7 @@ export default function AuthButton() {
           onAuthSuccess={(userData) => {
             setShowModal(false);
             setUser(userData);
+            window.location.reload();
           }} 
         />
       )}
