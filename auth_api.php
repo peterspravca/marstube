@@ -316,6 +316,15 @@ try {
         try {
             $stmt = $pdo->prepare("INSERT IGNORE INTO favorites (user_id, video_id, title, thumbnail_url, uploader_name) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$payload->user_id, $data->video_id, $data->title, isset($data->thumbnail_url) ? $data->thumbnail_url : null, isset($data->uploader_name) ? $data->uploader_name : null]);
+            
+            // Zmazať všetko okrem posledných 100 záznamov
+            $stmt = $pdo->prepare("DELETE FROM favorites WHERE user_id = ? AND id NOT IN (
+                SELECT id FROM (
+                    SELECT id FROM favorites WHERE user_id = ? ORDER BY added_at DESC LIMIT 100
+                ) as t
+            )");
+            $stmt->execute([$payload->user_id, $payload->user_id]);
+
             echo json_encode(["success" => true]);
         } catch (\PDOException $e) {
             echo json_encode(["error" => "Chyba pri ukladaní do obľúbených"]);
