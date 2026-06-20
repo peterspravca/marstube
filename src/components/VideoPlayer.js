@@ -15,6 +15,8 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   const [downloadProgress, setDownloadProgress] = useState("");
   const [downloadError, setDownloadError] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
+  const [clientPrevUrl, setClientPrevUrl] = useState(null);
+  const [clientNextUrl, setClientNextUrl] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const listId = searchParams.get("list");
@@ -97,6 +99,38 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       console.error(e);
     }
   }, []);
+
+  // Compute next/prev video URLs client-side if list is "favorites"
+  useEffect(() => {
+    if (listId === "favorites" && streamData?.id) {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+        if (saved) {
+          const favs = JSON.parse(saved);
+          const currentIndex = favs.findIndex(f => f.id === streamData.id || f.video_id === streamData.id);
+          
+          if (currentIndex > 0) {
+            const prevFav = favs[currentIndex - 1];
+            setClientPrevUrl(`/watch?v=${prevFav.id || prevFav.video_id}&list=favorites`);
+          } else {
+            setClientPrevUrl(null);
+          }
+
+          if (currentIndex >= 0 && currentIndex < favs.length - 1) {
+            const nextFav = favs[currentIndex + 1];
+            setClientNextUrl(`/watch?v=${nextFav.id || nextFav.video_id}&list=favorites`);
+          } else {
+            setClientNextUrl(null);
+          }
+        }
+      } catch (e) {
+        console.error("Error computing favorite URLs", e);
+      }
+    } else {
+      setClientPrevUrl(null);
+      setClientNextUrl(null);
+    }
+  }, [listId, streamData?.id]);
 
   const changeMode = (newMode) => {
     setMode(newMode);
@@ -257,10 +291,14 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   };
 
   const handleVideoEnded = () => {
-    if (nextVideoUrl) {
-      router.push(nextVideoUrl);
+    const targetUrl = clientNextUrl || nextVideoUrl;
+    if (targetUrl) {
+      router.push(targetUrl);
     }
   };
+
+  const finalPrevUrl = clientPrevUrl || prevVideoUrl;
+  const finalNextUrl = clientNextUrl || nextVideoUrl;
 
   if (!streamData) return <div className={styles.loading}>Načítavam dáta...</div>;
 
@@ -412,11 +450,11 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
       )}
       
       {/* Ovládacie prvky pre Playlist */}
-      {(prevVideoUrl || nextVideoUrl) && (
+      {(finalPrevUrl || finalNextUrl) && (
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: 'var(--bg-glass)', borderRadius: '0 0 12px 12px' }}>
-          {prevVideoUrl ? (
+          {finalPrevUrl ? (
             <button 
-              onClick={() => router.push(prevVideoUrl)}
+              onClick={() => router.push(finalPrevUrl)}
               style={{ background: 'var(--button-bg)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -426,9 +464,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             </button>
           ) : <div></div>}
           
-          {nextVideoUrl ? (
+          {finalNextUrl ? (
             <button 
-              onClick={() => router.push(nextVideoUrl)}
+              onClick={() => router.push(finalNextUrl)}
               style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

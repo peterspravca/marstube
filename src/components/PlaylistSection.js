@@ -478,7 +478,7 @@ export default function PlaylistSection() {
               {favorites.map((fav) => (
                 <a
                   key={fav.id}
-                  href={fav.url}
+                  href={`${fav.url}&list=favorites`}
                   className="glass-panel"
                   style={{
                     display: "flex",
