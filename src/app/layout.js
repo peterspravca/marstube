@@ -1,15 +1,10 @@
-import { Outfit, Inter } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ThemeProvider from "@/components/ThemeProvider";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
@@ -30,7 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="sk" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="sk" className={`${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="data-theme" defaultTheme="dark">
           <ServiceWorkerRegister />
