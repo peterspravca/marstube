@@ -35,6 +35,19 @@ try {
     ");
     echo "Tabuľka 'users' vytvorená (alebo už existuje).\n\n";
 
+    echo "Aktualizujem tabuľku 'users' pre zabudnuté heslo...\n";
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN reset_token VARCHAR(255) NULL");
+        echo "- Stĺpec 'reset_token' pridaný.\n";
+    } catch (\PDOException $e) {}
+    
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN reset_expires DATETIME NULL");
+        echo "- Stĺpec 'reset_expires' pridaný.\n";
+    } catch (\PDOException $e) {}
+    echo "\n";
+
+
     echo "Vytváram tabuľku 'watch_history'...\n";
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS watch_history (
