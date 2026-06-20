@@ -19,7 +19,7 @@ export default async function Home() {
             <span>Mars<span className="text-gradient">Tube</span></span>
           </h1>
         </div>
-        <div style={{ position: "absolute", top: "2rem", right: "2rem" }}>
+        <div style={{ position: "fixed", top: "1.5rem", right: "2rem", zIndex: 1000 }}>
           <AuthButton />
         </div>
         <p className="home-subtitle">
