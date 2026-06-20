@@ -36,7 +36,7 @@ function download_local_ffmpeg() {
     log_msg("Local FFmpeg missing. Attempting to download static binary...");
     
     // Direct link to static Linux amd64 binary of ffmpeg
-    $url = 'https://github.com/blinkot/ffmpeg-static-binaries/releases/download/v6.1.0/linux-x64';
+    $url = 'https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-linux-x64';
     
     $fp = @fopen($local_ffmpeg, 'w+');
     if ($fp === false) {
