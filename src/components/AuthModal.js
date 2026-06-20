@@ -6,6 +6,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -74,17 +75,31 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem"
             }}
           />
-          <input 
-            type="password" 
-            placeholder="Heslo" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)}
-            required
-            style={{
-              padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
-              background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem"
-            }}
-          />
+          <div style={{ position: "relative" }}>
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="Heslo" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)}
+              required
+              style={{
+                width: "100%", padding: "1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
+                background: "rgba(255,255,255,0.05)", color: "white", fontSize: "1rem", paddingRight: "3rem"
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute", right: "1rem", top: "50%", transform: "translateY(-50%)",
+                background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer",
+                fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center"
+              }}
+              title={showPassword ? "Skryť heslo" : "Zobraziť heslo"}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
           <button 
             type="submit" 
             disabled={loading}
