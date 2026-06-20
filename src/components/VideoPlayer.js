@@ -102,7 +102,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         let historyArray = saved ? JSON.parse(saved) : [];
         historyArray = historyArray.filter(v => v.url !== historyData.url);
         historyArray.unshift(historyData);
-        if (historyArray.length > 20) historyArray.pop(); // zvýšime limit pre neprihlásených
+        if (historyArray.length > 50) historyArray.pop(); // zvýšime limit pre neprihlásených
         localStorage.setItem("martubeHistory", JSON.stringify(historyArray));
 
         // 2. API uloženie (pre prihlásených)

@@ -46,12 +46,12 @@ export default function HistoryList() {
           const saved = localStorage.getItem("martubeHistory");
           if (saved) {
             let parsed = JSON.parse(saved);
-            const sixHoursMs = 6 * 60 * 60 * 1000;
+            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
             const now = Date.now();
             
             parsed = parsed.filter(item => {
               if (!item || !item.title) return false;
-              if (item.timestamp && (now - item.timestamp > sixHoursMs)) return false;
+              if (item.timestamp && (now - item.timestamp > thirtyDaysMs)) return false;
               return true;
             });
             
