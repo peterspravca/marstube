@@ -28,7 +28,7 @@ export default function AuthButton() {
 
   if (user) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
         <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
           {user.email}
         </span>

@@ -28,7 +28,9 @@ export default async function Home() {
           Bez reklám, bez prerušení. Váš osobný, prémiový zážitok.
         </p>
         
-        <SearchBar />
+        <div className="home-search-wrapper">
+          <SearchBar />
+        </div>
       </header>
       
       {/* Sekcia: Vlastný Playlist používateľa */}
