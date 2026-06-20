@@ -2,8 +2,8 @@
 
 import { useRef, useEffect, useState } from "react";
 import styles from "./VideoPlayer.module.css";
-
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { supabase } from "../lib/supabase";
 
 const STORAGE_KEY_FAVORITES = "martubeFavorites";
 
@@ -16,6 +16,8 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   const [downloadError, setDownloadError] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const listId = searchParams.get("list");
 
   // Check if video is in favorites
   useEffect(() => {
@@ -84,30 +86,43 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     // Uloženie do histórie
     if (!streamData.title) return;
     
-    try {
-      const historyData = {
-        url: `/watch?v=${streamData.id || new URL(window.location.href).searchParams.get("v")}`,
-        title: streamData.title,
-        thumbnail: streamData.thumbnailUrl,
-        uploaderName: streamData.uploader,
-        timestamp: Date.now()
-      };
-      
-      const saved = localStorage.getItem("martubeHistory");
-      let historyArray = saved ? JSON.parse(saved) : [];
-      
-      // Odstráni prípadný duplikát
-      historyArray = historyArray.filter(v => v.url !== historyData.url);
-      
-      // Pridá video na začiatok (max 10 záznamov)
-      historyArray.unshift(historyData);
-      if (historyArray.length > 10) historyArray.pop();
-      
-      localStorage.setItem("martubeHistory", JSON.stringify(historyArray));
-    } catch(e) {
-      console.error("Chyba ukladania histórie", e);
-    }
-  }, [streamData]);
+    const saveHistory = async () => {
+      try {
+        const historyData = {
+          url: `/watch?v=${streamData.id}${listId ? `&list=${listId}` : ''}`,
+          title: streamData.title,
+          thumbnail: streamData.thumbnailUrl,
+          uploaderName: streamData.uploader,
+          timestamp: Date.now(),
+          id: streamData.id // ukladáme id aj do lokálu pre lepšie spracovanie
+        };
+        
+        // 1. Lokálne uloženie (pre neprihlásených)
+        const saved = localStorage.getItem("martubeHistory");
+        let historyArray = saved ? JSON.parse(saved) : [];
+        historyArray = historyArray.filter(v => v.url !== historyData.url);
+        historyArray.unshift(historyData);
+        if (historyArray.length > 50) historyArray.pop(); // zvýšime limit pre neprihlásených
+        localStorage.setItem("martubeHistory", JSON.stringify(historyArray));
+
+        // 2. Supabase uloženie (pre prihlásených)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Uložíme záznam do Supabase. Duplikáty zatiaľ neriešime (pridá sa nový záznam o zhliadnutí)
+          await supabase.from("watch_history").insert([
+            {
+              user_id: session.user.id,
+              video_id: streamData.id
+            }
+          ]);
+        }
+      } catch(e) {
+        console.error("Chyba ukladania histórie", e);
+      }
+    };
+    
+    saveHistory();
+  }, [streamData, listId]);
 
   // Sťahovanie/Kontrola stavu na FTP pri zmene videa alebo prepnutí režimu
   useEffect(() => {

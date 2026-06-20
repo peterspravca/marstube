@@ -1,5 +1,6 @@
 import VideoPlayer from "@/components/VideoPlayer";
 import SearchBar from "@/components/SearchBar";
+import AuthButton from "@/components/AuthButton";
 import { getVideoStream } from "@/lib/api";
 
 export default async function WatchPage({ searchParams }) {
@@ -53,6 +54,9 @@ export default async function WatchPage({ searchParams }) {
         </a>
         <div className="watch-search-wrapper">
           <SearchBar />
+        </div>
+        <div style={{ marginLeft: "auto" }}>
+          <AuthButton />
         </div>
       </header>
       

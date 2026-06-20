@@ -2,6 +2,7 @@ import SearchBar from "@/components/SearchBar";
 import VideoCard from "@/components/VideoCard";
 import HistoryList from "@/components/HistoryList";
 import PlaylistSection from "@/components/PlaylistSection";
+import AuthButton from "@/components/AuthButton";
 import { getTrending } from "@/lib/api";
 
 export const revalidate = 3600;
@@ -17,6 +18,9 @@ export default async function Home() {
           <h1 className="home-title">
             <span>Mars<span className="text-gradient">Tube</span></span>
           </h1>
+        </div>
+        <div style={{ position: "absolute", top: "2rem", right: "2rem" }}>
+          <AuthButton />
         </div>
         <p className="home-subtitle">
           Bez reklám, bez prerušení. Váš osobný, prémiový zážitok.
