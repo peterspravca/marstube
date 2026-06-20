@@ -259,19 +259,22 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   useEffect(() => {
     if (streamUrl && videoRef.current) {
       const el = videoRef.current;
-      el.muted = true;
+      
       // Some browsers need explicit load() when src changes dynamically
       el.load();
       
       const playPromise = el.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          // Unmute shortly after playback starts
-          setTimeout(() => {
-            if (videoRef.current) videoRef.current.muted = false;
-          }, 500);
+          // Úspešne prehráva so zvukom
         }).catch(e => {
-          console.warn("Autoplay úplne zablokovaný:", e);
+          console.warn("Autoplay so zvukom zablokovaný, skúšam bez zvuku:", e);
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            videoRef.current.play().catch(err => {
+              console.warn("Autoplay úplne zablokovaný:", err);
+            });
+          }
         });
       }
     }
@@ -281,14 +284,17 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   const handleCanPlay = () => {
     const el = videoRef.current;
     if (!el || !el.paused) return; // already playing
-    el.muted = true;
-    el.play().then(() => {
-      setTimeout(() => {
-        if (videoRef.current) videoRef.current.muted = false;
-      }, 500);
-    }).catch(e => {
-      console.warn("Autoplay zablokovaný na canplay:", e);
-    });
+    
+    const playPromise = el.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(e => {
+        console.warn("Autoplay zablokovaný na canplay:", e);
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play().catch(err => console.warn(err));
+        }
+      });
+    }
   };
 
   const handleVideoEnded = () => {
@@ -394,7 +400,6 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               src={streamUrl}
               controls
               autoPlay
-              muted
               playsInline
               onCanPlay={handleCanPlay}
               onEnded={handleVideoEnded}
@@ -407,7 +412,6 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             src={streamUrl}
             controls
             autoPlay
-            muted
             playsInline
             onCanPlay={handleCanPlay}
             onEnded={handleVideoEnded}
