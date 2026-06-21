@@ -161,7 +161,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         // 1. Lokálne uloženie (pre neprihlásených)
         const saved = localStorage.getItem("martubeHistory");
         let historyArray = saved ? JSON.parse(saved) : [];
-        historyArray = historyArray.filter(v => v.url !== historyData.url);
+        historyArray = historyArray.filter(v => (v.id || v.video_id) !== streamData.id);
         historyArray.unshift(historyData);
         if (historyArray.length > 50) historyArray.pop(); // zvýšime limit pre neprihlásených
         localStorage.setItem("martubeHistory", JSON.stringify(historyArray));

@@ -72,14 +72,24 @@ export default function HistoryList() {
             const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
             const now = Date.now();
             
-            parsed = parsed.filter(item => {
+            let filtered = parsed.filter(item => {
               if (!item || !item.title) return false;
               if (item.timestamp && (now - item.timestamp > thirtyDaysMs)) return false;
               return true;
             });
             
-            setHistory(parsed);
-            localStorage.setItem("martubeHistory", JSON.stringify(parsed));
+            const uniqueParsed = [];
+            const seenIds = new Set();
+            for (const item of filtered) {
+              const id = item.id || item.video_id;
+              if (!seenIds.has(id)) {
+                seenIds.add(id);
+                uniqueParsed.push(item);
+              }
+            }
+            
+            setHistory(uniqueParsed);
+            localStorage.setItem("martubeHistory", JSON.stringify(uniqueParsed));
           }
         }
       } catch (e) {
