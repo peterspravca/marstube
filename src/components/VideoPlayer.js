@@ -306,6 +306,69 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
   const finalPrevUrl = clientPrevUrl || prevVideoUrl;
   const finalNextUrl = clientNextUrl || nextVideoUrl;
 
+  // Pre-fetching for the next video
+  useEffect(() => {
+    if (!finalNextUrl) return;
+    
+    // Extract video ID from finalNextUrl
+    // format: /watch?v=VIDEO_ID&list=LIST_ID
+    const match = finalNextUrl.match(/[?&]v=([^&]+)/);
+    if (!match || !match[1]) return;
+    
+    const nextVideoId = match[1];
+    
+    let active = true;
+    
+    const prefetchNext = async () => {
+      try {
+        // 1. Fetch stream info for the next video
+        const res = await fetch(`/api/stream?id=${nextVideoId}`);
+        const nextStreamData = await res.json();
+        
+        if (!active || !nextStreamData || nextStreamData.error) return;
+        
+        // 2. Trigger the download/caching on the server
+        const filename = mode === "video" 
+          ? `${nextVideoId}_video.mp4` 
+          : `${nextVideoId}_audio.m4a`;
+          
+        const sourceUrl = mode === "video" ? nextStreamData.videoUrl : nextStreamData.audioUrl;
+        const sourceClient = mode === "video" ? (nextStreamData.videoClient || "WEB") : (nextStreamData.audioClient || "WEB");
+        const sourceUA = mode === "video" ? nextStreamData.videoUserAgent : nextStreamData.audioUserAgent;
+        
+        if (!sourceUrl) return;
+        
+        // First check if it's already ready
+        const checkRes = await fetch(`https://marso.sk/play/download.php?action=status&filename=${filename}&token=MARSTUBE_API_SECRET_2026`);
+        const checkData = await checkRes.json();
+        
+        if (!active) return;
+        if (checkData.status === "ready") {
+          // You could also create a hidden audio/video element to preload the stream
+          // but browser native caching or just the server side cache is enough
+          return;
+        }
+        
+        // Otherwise trigger download in background
+        fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}&ua=${encodeURIComponent(sourceUA || '')}&token=MARSTUBE_API_SECRET_2026`)
+          .catch(err => console.log("Prefetch failed quietly:", err));
+        
+      } catch (err) {
+        console.log("Prefetch error:", err);
+      }
+    };
+    
+    // Slight delay so we don't block the main video loading immediately
+    const timeout = setTimeout(() => {
+      prefetchNext();
+    }, 5000);
+    
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, [finalNextUrl, mode]);
+
   if (!streamData) return <div className={styles.loading}>Načítavam dáta...</div>;
 
   return (
