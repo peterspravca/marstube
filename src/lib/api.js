@@ -77,7 +77,17 @@ export async function searchVideos(query) {
   }
 }
 
+const playlistCache = new Map();
+const streamCache = new Map();
+
 export async function getPlaylist(playlistId) {
+  if (playlistCache.has(playlistId)) {
+    const cached = playlistCache.get(playlistId);
+    if (Date.now() - cached.time < 1000 * 60 * 30) { // 30 min cache
+      return cached.data;
+    }
+  }
+
   try {
     const yt = await getYT();
     let playlist = await yt.getPlaylist(playlistId);
@@ -93,7 +103,7 @@ export async function getPlaylist(playlistId) {
       }
     }
 
-    return {
+    const result = {
       info: {
         title: playlist.info?.title || "Môj Playlist",
         author: playlist.info?.author?.name || "MarsTube",
@@ -110,6 +120,9 @@ export async function getPlaylist(playlistId) {
         duration: v.duration?.text || ""
       }))
     };
+    
+    playlistCache.set(playlistId, { time: Date.now(), data: result });
+    return result;
   } catch (e) {
     console.error("getPlaylist Error:", e);
     return { info: null, items: [] };
@@ -117,6 +130,12 @@ export async function getPlaylist(playlistId) {
 }
 
 export async function getVideoStream(videoId) {
+  if (streamCache.has(videoId)) {
+    const cached = streamCache.get(videoId);
+    if (Date.now() - cached.time < 1000 * 60 * 30) { // 30 min cache
+      return cached.data;
+    }
+  }
   try {
     const yt = await getYT();
     
@@ -187,7 +206,7 @@ export async function getVideoStream(videoId) {
     const videoUA = chosenVideoClient === 'WEB' ? webUA : CLIENT_USER_AGENTS[chosenVideoClient || 'WEB'];
     const audioUA = chosenAudioClient === 'WEB' ? webUA : CLIENT_USER_AGENTS[chosenAudioClient || 'WEB'];
 
-    return {
+    const result = {
       id: videoId,
       title: basicInfo?.title || "Neznámy názov",
       description: basicInfo?.short_description || "",
@@ -201,6 +220,9 @@ export async function getVideoStream(videoId) {
       uploader: basicInfo?.channel?.name || basicInfo?.author || "",
       error: !videoUrl && !audioUrl ? (clientErrorMessage || "Nepodarilo sa získať žiadny stream.") : null
     };
+    
+    streamCache.set(videoId, { time: Date.now(), data: result });
+    return result;
   } catch (error) {
     console.error("Error fetching video stream:", error);
     return {
