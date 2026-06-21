@@ -259,6 +259,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     if (streamUrl && videoRef.current) {
       const el = videoRef.current;
       
+      if (mode === "audio") {
+        el.muted = false; // Uistíme sa, že audio nikdy nie je stlmené
+      }
+      
       // Some browsers need explicit load() when src changes dynamically
       el.load();
       
@@ -268,7 +272,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           // Úspešne prehráva so zvukom
         }).catch(e => {
           console.warn("Autoplay so zvukom zablokovaný, skúšam bez zvuku:", e);
-          if (videoRef.current) {
+          if (videoRef.current && mode === "video") {
             videoRef.current.muted = true;
             videoRef.current.play().catch(err => {
               console.warn("Autoplay úplne zablokovaný:", err);
@@ -277,18 +281,22 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         });
       }
     }
-  }, [streamUrl]);
+  }, [streamUrl, mode]);
 
   // Fallback if browser waits for canplay
   const handleCanPlay = () => {
     const el = videoRef.current;
     if (!el || !el.paused) return; // already playing
     
+    if (mode === "audio") {
+      el.muted = false;
+    }
+
     const playPromise = el.play();
     if (playPromise !== undefined) {
       playPromise.catch(e => {
         console.warn("Autoplay zablokovaný na canplay:", e);
-        if (videoRef.current) {
+        if (videoRef.current && mode === "video") {
           videoRef.current.muted = true;
           videoRef.current.play().catch(err => console.warn(err));
         }
