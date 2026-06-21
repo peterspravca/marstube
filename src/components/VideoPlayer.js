@@ -367,9 +367,10 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     };
     
     // Slight delay so we don't block the main video loading immediately
+    // Zvýšené na 15 sekúnd po začatí, aby to nebrzdilo načítavanie aktuálneho videa
     const timeout = setTimeout(() => {
       prefetchNext();
-    }, 5000);
+    }, 15000);
     
     return () => {
       active = false;
