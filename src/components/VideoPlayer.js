@@ -375,31 +375,6 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     <div className={styles.playerContainer}>
       <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
         <button 
-          onClick={() => changeMode("video")}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '0.7rem 1.4rem',
-            borderRadius: '24px',
-            border: 'none',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '0.95rem',
-            background: mode === 'video' ? 'var(--accent-gradient)' : 'var(--button-bg)',
-            color: mode === 'video' ? '#ffffff' : 'var(--text-primary)',
-            boxShadow: mode === 'video' ? 'var(--shadow-glass)' : 'none',
-            border: '1px solid var(--border-glass-solid)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="23 7 16 12 23 17 23 7"></polygon>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-          </svg>
-          Video
-        </button>
-        <button 
           onClick={() => changeMode("audio")}
           style={{
             display: 'flex',
@@ -424,6 +399,31 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             <circle cx="18" cy="16" r="3"></circle>
           </svg>
           Hudba
+        </button>
+        <button 
+          onClick={() => changeMode("video")}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '0.7rem 1.4rem',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            background: mode === 'video' ? 'var(--accent-gradient)' : 'var(--button-bg)',
+            color: mode === 'video' ? '#ffffff' : 'var(--text-primary)',
+            boxShadow: mode === 'video' ? 'var(--shadow-glass)' : 'none',
+            border: '1px solid var(--border-glass-solid)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+          Video
         </button>
       </div>
 
@@ -582,27 +582,6 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
                 <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Obľúbiť</>
               )}
             </button>
-            <a 
-              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}&token=MARSTUBE_API_SECRET_2026`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '0.5rem 1rem',
-                borderRadius: '16px',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-                textDecoration: 'none',
-                background: 'var(--button-bg)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-glass-solid)',
-                transition: 'all 0.2s'
-              }}
-              title="Stiahnuť video (MP4)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Stiahnuť Video (MP4)
-            </a>
             {streamData.audioUrl && (
               <a 
                 href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_audio.mp3&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.audioUrl || '')}&client=${streamData.audioClient || 'WEB'}&ua=${encodeURIComponent(streamData.audioUserAgent || '')}&token=MARSTUBE_API_SECRET_2026`}
@@ -626,6 +605,27 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
                 Stiahnuť Hudbu (MP3)
               </a>
             )}
+            <a 
+              href={`https://marso.sk/play/download.php?action=save&filename=${streamData.id}_video.mp4&title=${encodeURIComponent(streamData.title || '')}&url=${encodeURIComponent(streamData.videoUrl || '')}&client=${streamData.videoClient || 'WEB'}&ua=${encodeURIComponent(streamData.videoUserAgent || '')}&token=MARSTUBE_API_SECRET_2026`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '0.5rem 1rem',
+                borderRadius: '16px',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                background: 'var(--button-bg)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-glass-solid)',
+                transition: 'all 0.2s'
+              }}
+              title="Stiahnuť video (MP4)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Stiahnuť Video (MP4)
+            </a>
           </div>
         </div>
         <div className={styles.description}>
