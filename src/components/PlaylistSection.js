@@ -309,7 +309,7 @@ export default function PlaylistSection() {
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: "1 1 300px" }}>
             <span style={{ fontSize: "1.5rem" }}>💡</span>
             <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
-              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Ak sa zaregistrujete, vaše obľúbené videá a playlisty sa uložia natrvalo a budete ich mať dostupné na všetkých vašich zariadeniach.
+              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Uložte si obľúbené videá a playlisty natrvalo. Stačí sa zaregistrovať.
             </p>
           </div>
           <button 

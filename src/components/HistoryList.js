@@ -126,7 +126,7 @@ export default function HistoryList() {
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: "1 1 300px" }}>
             <span style={{ fontSize: "1.5rem" }}>💡</span>
             <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
-              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Ak sa zaregistrujete, vaša história sa uloží natrvalo a budete ju mať dostupnú na všetkých vašich zariadeniach.
+              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Uložte si históriu natrvalo bezplatnou registráciou.
             </p>
           </div>
           <button 
