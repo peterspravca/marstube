@@ -65,7 +65,7 @@ function ResetPasswordContent() {
       }}>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <a href="/" style={{ display: "inline-block", marginBottom: "1.5rem" }}>
-            <img src="/logo.svg" alt="MarsTube Logo" style={{ width: "60px", height: "60px" }} />
+            <img src="/logo.png" alt="MarsTube Logo" style={{ width: "60px", height: "60px" }} />
           </a>
           <h2>Obnova <span className="text-gradient">hesla</span></h2>
         </div>

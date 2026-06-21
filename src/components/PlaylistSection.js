@@ -654,7 +654,7 @@ export default function PlaylistSection() {
             ) : playlistInfo ? (
               <>
                 <img
-                  src={playlistInfo.thumbnail || "/logo.svg"}
+                  src={playlistInfo.thumbnail || "/logo.png"}
                   alt={playlistInfo.title}
                   style={{
                     width: "100%",

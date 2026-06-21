@@ -13,7 +13,7 @@ export default function VideoCard({ video }) {
       <div className={styles.thumbnailContainer}>
         {/* Použijeme štandardný img element kvôli externým URL */}
         <img 
-          src={thumbnail || "/logo.svg"} 
+          src={thumbnail || "/logo.png"} 
           alt={title} 
           className={styles.thumbnail} 
           loading="lazy"

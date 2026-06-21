@@ -43,6 +43,11 @@
   --input-bg: rgba(0, 0, 0, 0.02);
 }
 
+.logo-dark { display: block; }
+.logo-light { display: none; }
+:root[data-theme='light'] .logo-dark { display: none; }
+:root[data-theme='light'] .logo-light { display: block; }
+
 * {
   box-sizing: border-box;
   margin: 0;

@@ -48,7 +48,7 @@ export default async function WatchPage({ searchParams }) {
     <main className="container animate-fade-in">
       <header className="watch-header">
         <a href="/" className="watch-logo">
-          <img src="/logo.svg" alt="Logo" style={{ width: "40px", height: "40px", borderRadius: "8px" }} />
+          <img src="/logo.png" alt="Logo" style={{ width: "40px", height: "40px", borderRadius: "8px" }} />
           <span>Mars<span className="text-gradient">Tube</span></span>
         </a>
         <div className="watch-search-wrapper">

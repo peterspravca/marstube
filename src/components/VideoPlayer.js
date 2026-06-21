@@ -432,7 +432,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           {/* Animated Background Glow */}
           <div style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', background: 'radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.15), transparent 60%)', animation: 'spin 15s linear infinite' }}></div>
           
-          <img src="/logo.svg" alt="MarsTube Logo" className="floating-logo" style={{ width: "90px", height: "90px", marginBottom: "1.5rem", zIndex: 1 }} />
+          <img src="/logo.png" alt="MarsTube Logo" className="floating-logo" style={{ width: "90px", height: "90px", marginBottom: "1.5rem", zIndex: 1 }} />
           
           <h2 style={{ fontSize: "1.8rem", fontWeight: "800", zIndex: 1, margin: 0, marginBottom: "0.5rem" }}>
             <span>Pripravujem <span className="text-gradient">MarsTube</span> zážitok</span>
@@ -448,7 +448,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         mode === "audio" ? (
           <div className={styles.audioPlayerWrapper}>
             <div className={styles.audioPosterWrapper}>
-              <img src="/logo.svg" alt="MarsTube Logo" className={styles.audioPoster} />
+              <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} />
               <div className={styles.musicWave}>
                 <span></span>
                 <span></span>
@@ -485,7 +485,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
         mode === "audio" ? (
           <div className={styles.audioPlayerWrapper} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-glass)' }}>
             <div className={styles.audioPosterWrapper}>
-              <img src="/logo.svg" alt="MarsTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
+              <img src="/logo.png" alt="MarsTube Logo" className={styles.audioPoster} style={{ filter: 'grayscale(1) opacity(0.3)' }} />
               <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
