@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 import { authApi } from "../lib/auth";
+import AuthModal from "./AuthModal";
 
 export default function HistoryList() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -14,6 +17,7 @@ export default function HistoryList() {
         setLoading(true);
         // 1. Skúsime získať prihláseného používateľa
         const user = authApi.getUser();
+        setIsLoggedIn(!!user);
         
         if (user) {
           // Prihlásený používateľ: Načítaj z nášho API
@@ -105,16 +109,63 @@ export default function HistoryList() {
   }
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-      gap: "2rem"
-    }}>
-      {history.map((video, idx) => {
-        const cleanUrl = video.url ? video.url.split('&list=')[0] : `/watch?v=${video.id || video.video_id}`;
-        const finalUrl = `${cleanUrl}&list=history`;
-        return <VideoCard key={idx} video={{ ...video, url: finalUrl }} />;
-      })}
-    </div>
+    <>
+      {!isLoggedIn && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(124, 58, 237, 0.05))",
+          border: "1px solid rgba(168, 85, 247, 0.2)",
+          borderRadius: "16px",
+          padding: "1rem 1.5rem",
+          marginBottom: "2rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: "1 1 300px" }}>
+            <span style={{ fontSize: "1.5rem" }}>💡</span>
+            <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
+              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Ak sa zaregistrujete, vaša história sa uloží natrvalo a budete ju mať dostupnú na všetkých vašich zariadeniach.
+            </p>
+          </div>
+          <button 
+            onClick={() => setShowAuthModal(true)}
+            style={{
+              padding: "0.6rem 1.2rem",
+              borderRadius: "12px",
+              border: "none",
+              background: "var(--accent-gradient)",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+              boxShadow: "var(--shadow-glow)",
+              whiteSpace: "nowrap"
+            }}
+          >
+            Zaregistrovať sa
+          </button>
+        </div>
+      )}
+
+      {showAuthModal && (
+        <AuthModal 
+          onClose={() => setShowAuthModal(false)} 
+          onAuthSuccess={() => window.location.reload()} 
+        />
+      )}
+
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+        gap: "2rem"
+      }}>
+        {history.map((video, idx) => {
+          const cleanUrl = video.url ? video.url.split('&list=')[0] : `/watch?v=${video.id || video.video_id}`;
+          const finalUrl = `${cleanUrl}&list=history`;
+          return <VideoCard key={idx} video={{ ...video, url: finalUrl }} />;
+        })}
+      </div>
+    </>
   );
 }

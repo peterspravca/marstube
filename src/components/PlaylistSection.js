@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { authApi } from "../lib/auth";
+import AuthModal from "./AuthModal";
 
 const STORAGE_KEY_PLAYLISTS = "martubeSavedPlaylists"; // Array of { id, name? }
 const STORAGE_KEY_FAVORITES = "martubeFavorites"; // Array of { id, url, title, thumbnail, uploaderName, addedAt }
@@ -13,6 +14,8 @@ export default function PlaylistSection() {
   const [activeTab, setActiveTab] = useState("favorites"); // "favorites" | playlist id
   const [addInput, setAddInput] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Currently loaded playlist data
   const [playlistInfo, setPlaylistInfo] = useState(null);
@@ -26,6 +29,8 @@ export default function PlaylistSection() {
         let loadedPlaylists = [];
         
         const user = authApi.getUser();
+        setIsLoggedIn(!!user);
+
         if (user) {
           try {
             let dbPlaylists = await authApi.getPlaylists();
@@ -287,6 +292,52 @@ export default function PlaylistSection() {
 
   return (
     <div>
+      {/* Promo banner for unregistered users */}
+      {!isLoggedIn && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(124, 58, 237, 0.05))",
+          border: "1px solid rgba(168, 85, 247, 0.2)",
+          borderRadius: "16px",
+          padding: "1rem 1.5rem",
+          marginBottom: "1.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: "1 1 300px" }}>
+            <span style={{ fontSize: "1.5rem" }}>💡</span>
+            <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
+              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Ak sa zaregistrujete, vaše obľúbené videá a playlisty sa uložia natrvalo a budete ich mať dostupné na všetkých vašich zariadeniach.
+            </p>
+          </div>
+          <button 
+            onClick={() => setShowAuthModal(true)}
+            style={{
+              padding: "0.6rem 1.2rem",
+              borderRadius: "12px",
+              border: "none",
+              background: "var(--accent-gradient)",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+              boxShadow: "var(--shadow-glow)",
+              whiteSpace: "nowrap"
+            }}
+          >
+            Zaregistrovať sa
+          </button>
+        </div>
+      )}
+
+      {showAuthModal && (
+        <AuthModal 
+          onClose={() => setShowAuthModal(false)} 
+          onAuthSuccess={() => window.location.reload()} 
+        />
+      )}
+
       {/* Section Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
         <h2 style={{ fontSize: "2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
