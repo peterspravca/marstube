@@ -41,6 +41,8 @@ export const authApi = {
   logout() {
     localStorage.removeItem("mars_token");
     localStorage.removeItem("mars_email");
+    localStorage.removeItem("martubeFavorites");
+    localStorage.removeItem("martubeSavedPlaylists");
   },
 
   getUser() {
