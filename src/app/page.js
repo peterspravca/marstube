@@ -26,7 +26,7 @@ export default async function Home() {
           <AuthButton />
         </div>
         <p className="home-subtitle">
-          Bez reklám, bez prerušení. Váš osobný, prémiový zážitok.
+          Bez reklám, bez prerušení. <br className="mobile-break" />Váš osobný, prémiový zážitok.
         </p>
         
         <div className="home-search-wrapper">

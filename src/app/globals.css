@@ -145,6 +145,9 @@ a {
   max-width: 800px;
   margin: 0 auto 3rem;
 }
+.mobile-break {
+  display: none;
+}
 
 /* Watch Page Header */
 .watch-header {
@@ -250,14 +253,20 @@ a {
     gap: 0.5rem;
     order: 2;
   }
+  .home-logo-title img {
+    height: 40px !important;
+  }
   .home-title {
     font-size: 2.5rem;
   }
   .home-subtitle {
-    font-size: 1rem;
+    font-size: 0.85rem;
     margin-bottom: 2rem;
     padding: 0 1rem;
     order: 3;
+  }
+  .mobile-break {
+    display: block;
   }
   .home-search-wrapper {
     order: 4;
