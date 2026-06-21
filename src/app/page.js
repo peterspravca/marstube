@@ -15,7 +15,7 @@ export default async function Home() {
     <main className="container animate-fade-in">
       <header className="home-header">
         <div className="home-logo-title">
-          <img src="/logo.png" alt="MarsTube Logo" className="floating-logo" style={{ height: "60px", width: "auto", objectFit: "contain", marginRight: "10px" }} />
+          <img src="/logo.png" alt="MarsTube Logo" className="floating-logo" style={{ height: "60px", width: "auto", objectFit: "contain", marginRight: "0px" }} />
           <h1 className="home-title" style={{ display: 'flex', alignItems: 'center' }}>
             <img src="/marstube-light.png" alt="MarsTube" className="logo-light" style={{ height: "60px", width: "auto" }} />
             <img src="/marstube-dark.png" alt="MarsTube" className="logo-dark" style={{ height: "60px", width: "auto" }} />

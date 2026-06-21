@@ -48,7 +48,7 @@ export default async function WatchPage({ searchParams }) {
     <main className="container animate-fade-in">
       <header className="watch-header">
         <a href="/" className="watch-logo" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/logo.png" alt="Logo" style={{ height: "30px", width: "auto", objectFit: "contain", borderRadius: "8px", marginRight: "10px" }} />
+          <img src="/logo.png" alt="Logo" style={{ height: "30px", width: "auto", objectFit: "contain", borderRadius: "8px", marginRight: "0px" }} />
           <img src="/marstube-light.png" alt="MarsTube" className="logo-light" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
           <img src="/marstube-dark.png" alt="MarsTube" className="logo-dark" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
         </a>
