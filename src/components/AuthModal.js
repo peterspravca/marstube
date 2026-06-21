@@ -90,7 +90,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
         {success && <div style={{ color: "#4ade80", background: "rgba(74,222,128,0.1)", padding: "0.8rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.9rem" }}>{success}</div>}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {!showVerify ? (
+          {!showVerify && !showForgot ? (
             <>
               <input 
             type="email" 

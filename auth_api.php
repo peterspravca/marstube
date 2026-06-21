@@ -164,19 +164,29 @@ try {
         $password = $data->password;
         
         // Zisti, či existuje
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt = $pdo->prepare("SELECT id, is_verified FROM users WHERE email = ?");
         $stmt->execute([$email]);
-        if ($stmt->fetch()) {
-            echo json_encode(["error" => "Tento email už je zaregistrovaný."]);
-            exit;
-        }
+        $existingUser = $stmt->fetch();
         
-        // Vygenerovanie 6-miestneho kódu
         $code = sprintf("%06d", mt_rand(1, 999999));
         $hash = password_hash($password, PASSWORD_BCRYPT);
         
-        $stmt = $pdo->prepare("INSERT INTO users (email, password_hash, verification_code) VALUES (?, ?, ?)");
-        if ($stmt->execute([$email, $hash, $code])) {
+        if ($existingUser) {
+            if ($existingUser['is_verified']) {
+                echo json_encode(["error" => "Tento email už je zaregistrovaný."]);
+                exit;
+            } else {
+                // Používateľ existuje, ale nie je overený. Aktualizujeme mu heslo a kód.
+                $stmt = $pdo->prepare("UPDATE users SET password_hash = ?, verification_code = ? WHERE id = ?");
+                $successDb = $stmt->execute([$hash, $code, $existingUser['id']]);
+            }
+        } else {
+            // Nový používateľ
+            $stmt = $pdo->prepare("INSERT INTO users (email, password_hash, verification_code) VALUES (?, ?, ?)");
+            $successDb = $stmt->execute([$email, $hash, $code]);
+        }
+        
+        if ($successDb) {
             // Poslať email cez SMTP
             $subject = "Overenie registracie do MarsTube";
             $message = "Vítame vás v MarsTube!\n\nVáš overovací kód je: $code\n\nZadajte tento kód do aplikácie pre dokončenie registrácie.";
