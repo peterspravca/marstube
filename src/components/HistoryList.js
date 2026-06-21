@@ -124,7 +124,13 @@ export default function HistoryList() {
           gap: "1rem"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: "1 1 300px" }}>
-            <span style={{ fontSize: "1.5rem" }}>💡</span>
+            <div style={{ color: "var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.3 1.5 1.5 2.5"></path>
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+              </svg>
+            </div>
             <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
               <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Uložte si históriu natrvalo bezplatnou registráciou.
             </p>
