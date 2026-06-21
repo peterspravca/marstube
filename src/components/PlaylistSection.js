@@ -345,7 +345,13 @@ export default function PlaylistSection() {
           Moja hudba
         </h2>
         <button
-          onClick={() => setShowAddForm(!showAddForm)}
+          onClick={() => {
+            if (!isLoggedIn) {
+              setShowAuthModal(true);
+            } else {
+              setShowAddForm(!showAddForm);
+            }
+          }}
           style={{
             background: showAddForm ? "var(--button-bg-hover)" : "var(--button-bg)",
             border: "1px solid var(--border-glass-solid)",
@@ -361,7 +367,9 @@ export default function PlaylistSection() {
             gap: "0.4rem",
           }}
         >
-          {showAddForm ? (
+          {!isLoggedIn ? (
+            <>🔒 Pridať playlist</>
+          ) : showAddForm ? (
             <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Zavrieť</>
           ) : (
             <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Pridať playlist</>
