@@ -373,3 +373,12 @@ a {
     margin-bottom: 0.5rem;
   }
 }
+
+/* Fix ugly browser autofill background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
