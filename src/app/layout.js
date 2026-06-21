@@ -88,17 +88,31 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
-              "name": "MarsTube",
-              "operatingSystem": "Web",
-              "applicationCategory": "MultimediaApplication",
-              "description": "Prémiový zážitok zo sledovania videí a hudby bez reklám a prerušení.",
-              "url": "https://marso.sk",
-              "publisher": {
-                "@type": "Organization",
-                "name": "Marsoftmedia",
-                "url": "https://marso.sk"
-              }
+              "@graph": [
+                {
+                  "@type": "SoftwareApplication",
+                  "name": "MarsTube",
+                  "operatingSystem": "Web",
+                  "applicationCategory": "MultimediaApplication",
+                  "description": "Prémiový zážitok zo sledovania videí a hudby bez reklám a prerušení.",
+                  "url": "https://marstube.vercel.app",
+                  "publisher": {
+                    "@type": "Organization",
+                    "name": "Marsoftmedia",
+                    "url": "https://marso.sk"
+                  }
+                },
+                {
+                  "@type": "WebSite",
+                  "url": "https://marstube.vercel.app",
+                  "name": "MarsTube",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://marstube.vercel.app/search?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                }
+              ]
             })
           }}
         />
