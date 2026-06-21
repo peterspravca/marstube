@@ -432,7 +432,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           {/* Animated Background Glow */}
           <div style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', background: 'radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.15), transparent 60%)', animation: 'spin 15s linear infinite' }}></div>
           
-          <img src="/logo.png" alt="MarsTube Logo" className="floating-logo" style={{ width: "90px", height: "90px", marginBottom: "1.5rem", zIndex: 1 }} />
+          <img src="/logo.png" alt="MarsTube Logo" className="floating-logo" style={{ height: "70px", width: "auto", objectFit: "contain", marginBottom: "1.5rem", zIndex: 1 }} />
           
           <h2 style={{ fontSize: "1.8rem", fontWeight: "800", zIndex: 1, margin: 0, marginBottom: "0.5rem" }}>
             <span>Pripravujem <span className="text-gradient">MarsTube</span> zážitok</span>
