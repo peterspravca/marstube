@@ -2,6 +2,7 @@ import { JetBrains_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ThemeProvider from "@/components/ThemeProvider";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -118,8 +119,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <ThemeProvider attribute="data-theme" defaultTheme="dark">
-          <ServiceWorkerRegister />
+        <LanguageProvider>
+          <ThemeProvider attribute="data-theme" defaultTheme="dark">
+            <ServiceWorkerRegister />
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <div style={{ flex: '1' }}>
               {children}
@@ -131,6 +133,7 @@ export default function RootLayout({ children }) {
             </footer>
           </div>
         </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

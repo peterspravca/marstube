@@ -26,7 +26,7 @@ export default function VideoCard({ video }) {
         <h3 className={styles.title} title={title}>{title}</h3>
         <p className={styles.uploader}>{uploaderName}</p>
         <p className={styles.meta}>
-          {views ? `${views.toLocaleString()} zobrazení` : ""} 
+          {views ? views.toLocaleString() : ""}
           {uploadedDate ? ` • ${uploadedDate}` : ""}
         </p>
       </div>

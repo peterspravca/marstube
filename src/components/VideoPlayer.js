@@ -560,7 +560,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
             <span className={styles.uploader}>{streamData.uploader}</span>
             <span className={styles.views}>
-              {streamData.views?.toLocaleString()} zobrazení
+              {streamData.views?.toLocaleString()}
             </span>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
