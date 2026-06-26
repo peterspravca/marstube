@@ -186,6 +186,31 @@ a {
   align-items: center;
 }
 
+/* Language toggle button */
+.lang-toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+  box-shadow: var(--shadow-glass);
+  transition: all 0.2s;
+}
+.lang-toggle-placeholder {
+  width: 70px;
+  height: 36px;
+}
+
 /* Playlist Layout */
 .playlist-container {
   display: flex;
@@ -250,6 +275,11 @@ a {
     order: 1;
     flex-wrap: nowrap;
     gap: 0.6rem;
+  }
+  .lang-toggle-btn {
+    position: static;
+    top: unset;
+    left: unset;
   }
   .home-logo-title {
     gap: 0.5rem;
