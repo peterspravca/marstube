@@ -3,6 +3,7 @@ import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ThemeProvider from "@/components/ThemeProvider";
 import { LanguageProvider } from "@/components/LanguageProvider";
+import TranslatedText from "@/components/TranslatedText";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -128,7 +129,7 @@ export default function RootLayout({ children }) {
             </div>
             <footer style={{ textAlign: 'center', padding: '1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-glass-solid)' }}>
               <a href="https://marso.sk/portfolio/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
-                &copy; 2026 Peter Maršo. Všetky práva vyhradené.
+                <TranslatedText id="home.footer" />
               </a>
             </footer>
           </div>

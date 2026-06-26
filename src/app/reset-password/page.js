@@ -1,13 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "@/lib/auth";
+import { useLanguage } from "@/components/LanguageProvider";
+import TranslatedText from "@/components/TranslatedText";
 
 function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const { t } = useLanguage();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -68,7 +70,7 @@ function ResetPasswordContent() {
           <a href="/" style={{ display: "inline-block", marginBottom: "1.5rem" }}>
             <img src="/logo.png" alt="MarsTube Logo" style={{ height: "45px", width: "auto", objectFit: "contain" }} />
           </a>
-          <h2>Obnova <span className="text-gradient">hesla</span></h2>
+          <h2>{t("auth.resetPasswordTitle")} <span className="text-gradient">{t("auth.resetPasswordTitleBold")}</span></h2>
         </div>
 
         {error && <div style={{ color: "#ff4d4d", background: "rgba(255,70,70,0.1)", padding: "1rem", borderRadius: "12px", marginBottom: "1.5rem" }}>{error}</div>}
@@ -152,13 +154,13 @@ function ResetPasswordContent() {
                 opacity: loading ? 0.7 : 1, marginTop: "0.5rem"
               }}
             >
-              {loading ? "Čakajte..." : "Zmeniť heslo"}
+              {loading ? t("auth.loadingWait") : t("auth.resetPasswordBtn")}
             </button>
           </form>
         )}
 
         {!token && !error && (
-          <div style={{ textAlign: "center", color: "var(--text-secondary)" }}>Načítavam...</div>
+          <div style={{ textAlign: "center", color: "var(--text-secondary)" }}>{t("common.loading")}</div>
         )}
       </div>
     </main>
@@ -167,7 +169,7 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div style={{ textAlign: "center", padding: "5rem" }}>Načítavam...</div>}>
+    <Suspense fallback={<div style={{ textAlign: "center", padding: "5rem" }}><TranslatedText id="common.loading" /></div>}>
       <ResetPasswordContent />
     </Suspense>
   );

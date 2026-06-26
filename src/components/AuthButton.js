@@ -44,7 +44,7 @@ export default function AuthButton() {
           onMouseOver={e => e.currentTarget.style.background = "rgba(255,70,70,0.2)"}
           onMouseOut={e => e.currentTarget.style.background = "var(--button-bg)"}
         >
-          Odhlásiť sa
+          {t("auth.logoutBtn")}
         </button>
       </div>
     );
@@ -60,7 +60,7 @@ export default function AuthButton() {
           cursor: "pointer", boxShadow: "var(--shadow-glass)"
         }}
       >
-        Prihlásiť sa
+        {t("auth.login")}
       </button>
       
       {showModal && (

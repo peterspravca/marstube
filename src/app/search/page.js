@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import SearchBar from "@/components/SearchBar";
+import TranslatedText from "@/components/TranslatedText";
 import VideoCard from "@/components/VideoCard";
 import { searchVideos } from "@/lib/api";
 
@@ -66,11 +67,11 @@ export default async function SearchPage({ searchParams }) {
       <header className="search-header-container">
         <div className="search-header-top">
           <h1 className="search-title">
-            Výsledky pre: <span className="text-gradient">{query}</span>
+            <TranslatedText id="search.resultsFor" /><span className="text-gradient">{query}</span>
           </h1>
           <a href="/" className="search-home-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            Domov
+            <TranslatedText id="common.home" />
           </a>
         </div>
         <SearchBar />
@@ -79,7 +80,7 @@ export default async function SearchPage({ searchParams }) {
       <section>
         {results.length === 0 ? (
           <div className="glass-panel" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
-            Nenašli sa žiadne výsledky. Skúste iný výraz.
+            <TranslatedText id="search.noResults" />
           </div>
         ) : (
           <div style={{

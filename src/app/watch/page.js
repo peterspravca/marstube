@@ -1,5 +1,6 @@
 import VideoPlayer from "@/components/VideoPlayer";
 import SearchBar from "@/components/SearchBar";
+import TranslatedText from "@/components/TranslatedText";
 import AuthButton from "@/components/AuthButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVideoStream } from "@/lib/api";
@@ -66,7 +67,7 @@ export default async function WatchPage({ searchParams }) {
           <VideoPlayer streamData={streamData} nextVideoUrl={nextVideoUrl} prevVideoUrl={prevVideoUrl} />
         ) : (
           <div className="glass-panel" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
-            Nepodarilo sa načítať video. Skontrolujte URL alebo skúste iné video.
+            <TranslatedText id="watch.error" />
           </div>
         )}
       </section>

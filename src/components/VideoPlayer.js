@@ -379,7 +379,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
     };
   }, [finalNextUrl, mode]);
 
-  if (!streamData) return <div className={styles.loading}>Načítavam dáta...</div>;
+  if (!streamData) return <div className={styles.loading}>{t("common.loading")}</div>;
 
   return (
     <div className={styles.playerContainer}>
@@ -408,7 +408,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             <circle cx="6" cy="18" r="3"></circle>
             <circle cx="18" cy="16" r="3"></circle>
           </svg>
-          Hudba
+          {t("player.music")}
         </button>
         <button 
           onClick={() => changeMode("video")}
@@ -433,7 +433,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             <polygon points="23 7 16 12 23 17 23 7"></polygon>
             <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
           </svg>
-          Video
+          {t("player.video")}
         </button>
       </div>
 
@@ -445,7 +445,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
           <img src="/logo.png" alt="MarsTube Logo" className="floating-logo" style={{ height: "70px", width: "auto", objectFit: "contain", marginBottom: "1.5rem", zIndex: 1 }} />
           
           <h2 style={{ fontSize: "1.8rem", fontWeight: "800", zIndex: 1, margin: 0, marginBottom: "0.5rem" }}>
-            <span>Pripravujem <span className="text-gradient">MarsTube</span> zážitok</span>
+            <span>{t("player.preparingExperience")} <span className="text-gradient">MarsTube</span> {t("player.experience")}</span>
           </h2>
           
           <div style={{ marginTop: '1rem', fontWeight: '500', textAlign: 'center', maxWidth: '80%', zIndex: 1, color: 'var(--text-secondary)', fontSize: '1.05rem', letterSpacing: '0.5px' }}>
@@ -499,9 +499,9 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '1rem', padding: '0 2rem' }}>
                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4d4d', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                  Nepodarilo sa prehrať audio priamo
+                  {t("player.audioError")}
                 </div>
-                <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || "Chyba prípravy audio streamu."}</div>
+                <div style={{ fontSize: '0.9rem' }}>{downloadError || streamData.error || t("player.audioStreamError")}</div>
               </div>
             </div>
           </div>
@@ -519,8 +519,8 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               ></iframe>
             </div>
             <div className={styles.error} style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem", marginTop: "1rem" }}>
-              Upozornenie: Nepodarilo sa prehrať súbor priamo (Chyba: {downloadError || streamData.error || "Neznáma chyba"}). 
-              Preto bol načítaný oficiálny YouTube prehrávač.
+              {t("player.fallbackWarning")} ({t("player.error")}: {downloadError || streamData.error || t("player.unknownError")}). 
+              {t("player.fallbackLoaded")}
             </div>
           </div>
         )
@@ -536,7 +536,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
-                Predchádzajúca
+                {t("player.previous")}
               </div>
             </button>
           ) : <div></div>}
@@ -547,7 +547,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               style={{ background: 'var(--accent-gradient)', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', color: '#ffffff', cursor: 'pointer', fontWeight: 'bold' }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                Nasledujúca
+                {t("player.next")}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
               </div>
             </button>
@@ -589,7 +589,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               {isFavorite ? (
                 <><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> {t("player.favorite")}</>
               ) : (
-                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Obľúbiť</>
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> {t("player.favorite")}</>
               )}
             </button>
             {streamData.audioUrl && (
@@ -612,7 +612,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
                 title={t("player.downloadAudio")}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-                Stiahnuť Hudbu (MP3)
+                {t("player.downloadAudio")}
               </a>
             )}
             <a 
@@ -634,7 +634,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
               title={t("player.downloadVideo")}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Stiahnuť Video (MP4)
+              {t("player.downloadVideo")}
             </a>
           </div>
         </div>

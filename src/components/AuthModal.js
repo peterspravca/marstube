@@ -85,7 +85,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
         >✕</button>
         
         <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          {showForgot ? "Obnova hesla" : (showVerify ? "Overenie E-mailu" : (isLogin ? "Prihlásenie" : "Registrácia"))} do Mars<span className="text-gradient">Tube</span>
+          {showForgot ? t("auth.modalForgot") : (showVerify ? t("auth.modalVerify") : (isLogin ? t("auth.modalLogin") : t("auth.modalRegister")))} do Mars<span className="text-gradient">Tube</span>
         </h2>
 
         {error && <div style={{ color: "#ff4d4d", background: "rgba(255,70,70,0.1)", padding: "0.8rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.9rem" }}>{error}</div>}
@@ -96,7 +96,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
             <>
               <input 
             type="email" 
-            placeholder="Email" 
+            placeholder={t("auth.emailPlaceholder")} 
             value={email} 
             onChange={e => setEmail(e.target.value)}
             required
@@ -108,7 +108,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
           <div style={{ position: "relative" }}>
             <input 
               type={showPassword ? "text" : "password"} 
-              placeholder="Heslo" 
+              placeholder={t("auth.passwordPlaceholder")} 
               value={password} 
               onChange={e => setPassword(e.target.value)}
               required
@@ -125,7 +125,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                 background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer",
                 fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center"
               }}
-              title={showPassword ? "Skryť heslo" : "Zobraziť heslo"}
+              title={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
             >
               {showPassword ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -146,14 +146,14 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                   onClick={() => { setShowForgot(true); setError(""); setSuccess(""); }}
                   style={{ background: "none", border: "none", color: "var(--accent-primary)", cursor: "pointer", fontSize: "0.9rem" }}
                 >
-                  Zabudli ste heslo?
+                  {t("auth.forgotPasswordBtn")}
                 </button>
               </div>
             </>
           ) : showForgot ? (
             <input 
               type="email" 
-              placeholder="Váš e-mail" 
+              placeholder={t("auth.emailPlaceholder")} 
               value={email} 
               onChange={e => setEmail(e.target.value)}
               required
@@ -165,7 +165,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
           ) : (
             <input 
               type="text" 
-              placeholder="Zadajte 6-miestny kód z e-mailu" 
+              placeholder={t("auth.verifyCodePlaceholder")} 
               value={verifyCode} 
               onChange={e => setVerifyCode(e.target.value)}
               required
@@ -185,13 +185,13 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
               opacity: loading ? 0.7 : 1
             }}
           >
-            {loading ? "Čakajte..." : (showForgot ? "Odoslať odkaz na obnovu" : (showVerify ? "Overiť a prihlásiť" : (isLogin ? "Prihlásiť sa" : "Zaregistrovať sa")))}
+            {loading ? t("auth.loading") : (showForgot ? t("auth.sendResetBtn") : (showVerify ? t("auth.verifyAndLogin") : (isLogin ? t("auth.login") : t("auth.register"))))}
           </button>
         </form>
 
         {!showVerify && !showForgot && (
           <div style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-            {isLogin ? "Nemáte ešte účet?" : "Už máte účet?"}
+            {isLogin ? t("auth.noAccount") : t("auth.hasAccount")}
             <button 
               onClick={() => { setIsLogin(!isLogin); setError(""); setSuccess(""); }}
               style={{ 
@@ -199,7 +199,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                 fontWeight: "bold", cursor: "pointer", marginLeft: "0.5rem" 
               }}
             >
-              {isLogin ? "Zaregistrujte sa" : "Prihláste sa"}
+              {isLogin ? t("auth.register") : t("auth.login")}
             </button>
           </div>
         )}
@@ -213,7 +213,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
                 fontWeight: "bold", cursor: "pointer" 
               }}
             >
-              Späť na prihlásenie
+              {t("auth.backToLogin")}
             </button>
           </div>
         )}

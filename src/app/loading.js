@@ -1,3 +1,6 @@
+"use client";
+import TranslatedText from "@/components/TranslatedText";
+
 export default function Loading() {
   return (
     <div style={{
@@ -22,8 +25,8 @@ export default function Loading() {
         animation: 'globalSpinner 1s linear infinite',
         marginBottom: '1.5rem'
       }}></div>
-      <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 'bold' }}>Načítavam...</h2>
-      <p style={{ color: 'var(--text-secondary, #a0a0a5)', marginTop: '0.8rem', fontSize: '1.1rem' }}>Spracovávam údaje, prosím počkajte.</p>
+      <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 'bold' }}><TranslatedText id="common.loading" /></h2>
+      <p style={{ color: 'var(--text-secondary, #a0a0a5)', marginTop: '0.8rem', fontSize: '1.1rem' }}><TranslatedText id="common.processing" /></p>
       <style>{`
         @keyframes globalSpinner {
           to { transform: rotate(360deg); }
