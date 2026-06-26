@@ -16,12 +16,13 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={() => setLanguage(language === 'sk' ? 'en' : 'sk')}
-      className="lang-toggle-btn"
+      className="lang-toggle-btn notranslate"
       aria-label={language === 'sk' ? 'Switch to English' : 'Prepnúť do slovenčiny'}
+      translate="no"
     >
-      <span style={{ opacity: language === 'sk' ? 1 : 0.4 }}>SK</span>
-      <span style={{ margin: '0 4px', opacity: 0.3 }}>/</span>
-      <span style={{ opacity: language === 'en' ? 1 : 0.4 }}>EN</span>
+      <span style={{ opacity: language === 'sk' ? 1 : 0.4 }} translate="no">SK</span>
+      <span style={{ margin: '0 4px', opacity: 0.3 }} translate="no">/</span>
+      <span style={{ opacity: language === 'en' ? 1 : 0.4 }} translate="no">EN</span>
     </button>
   );
 }
