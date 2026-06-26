@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 import { authApi } from "../lib/auth";
 import AuthModal from "./AuthModal";
+import { useLanguage } from "./LanguageProvider";
 
 export default function HistoryList() {
+  const { t } = useLanguage();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);

@@ -3,11 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { authApi } from "../lib/auth";
 import AuthModal from "./AuthModal";
+import { useLanguage } from "./LanguageProvider";
 
 const STORAGE_KEY_PLAYLISTS = "martubeSavedPlaylists"; // Array of { id, name? }
 const STORAGE_KEY_FAVORITES = "martubeFavorites"; // Array of { id, url, title, thumbnail, uploaderName, addedAt }
 
 export default function PlaylistSection() {
+  const { t } = useLanguage();
   // --- State ---
   const [playlists, setPlaylists] = useState([]); // [{ id: "PLxxx", name: "..." }, ...]
   const [favorites, setFavorites] = useState([]);

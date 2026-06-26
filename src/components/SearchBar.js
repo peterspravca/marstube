@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import styles from "./SearchBar.module.css";
+import { useLanguage } from "./LanguageProvider";
 
 function parseYoutubeUrl(urlStr) {
   try {
@@ -37,6 +38,7 @@ function parseYoutubeUrl(urlStr) {
 }
 
 export default function SearchBar() {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -79,11 +81,11 @@ export default function SearchBar() {
         <input
           type="text"
           className={styles.searchInput}
-          placeholder="Vyhľadať video..."
+          placeholder={t("search.placeholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button type="submit" className={styles.searchButton} aria-label="Vyhľadať" title="Vyhľadať">
+        <button type="submit" className={styles.searchButton} aria-label={t("search.button")} title={t("search.button")}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -114,8 +116,8 @@ export default function SearchBar() {
             animation: 'searchSpinner 1s linear infinite',
             marginBottom: '1.5rem'
           }}></div>
-          <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 'bold' }}>Vyhľadávam...</h2>
-          <p style={{ color: 'var(--text-secondary, #a0a0a5)', marginTop: '0.8rem', fontSize: '1.1rem' }}>Spracovávam požiadavku, prosím počkajte.</p>
+          <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 'bold' }}>{t("search.loading")}</h2>
+          <p style={{ color: 'var(--text-secondary, #a0a0a5)', marginTop: '0.8rem', fontSize: '1.1rem' }}>{t("search.processing")}</p>
           <style>{`
             @keyframes searchSpinner {
               to { transform: rotate(360deg); }

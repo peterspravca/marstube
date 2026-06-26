@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import { authApi } from "../lib/auth";
+import { useLanguage } from "./LanguageProvider";
 
 export default function AuthModal({ onClose, onAuthSuccess }) {
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

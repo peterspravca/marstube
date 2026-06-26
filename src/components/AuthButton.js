@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { authApi } from "../lib/auth";
 import AuthModal from "./AuthModal";
+import { useLanguage } from "./LanguageProvider";
 
 export default function AuthButton() {
+  const { t } = useLanguage();
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
