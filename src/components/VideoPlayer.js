@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import styles from "./VideoPlayer.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "../lib/auth";
+import { useLanguage } from "./LanguageProvider";
 
 const STORAGE_KEY_FAVORITES = "martubeFavorites";
 
