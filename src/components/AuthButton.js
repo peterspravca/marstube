@@ -29,17 +29,18 @@ export default function AuthButton() {
   };
 
   if (user) {
+    const displayName = user.email ? user.email.split("@")[0] : user.email;
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-        <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-          {user.email}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem", flexWrap: "nowrap", whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "120px" }}>
+          {displayName}
         </span>
         <button 
           onClick={handleLogout}
           style={{
             padding: "0.5rem 1rem", borderRadius: "12px", border: "1px solid var(--border-glass)",
             background: "var(--button-bg)", color: "var(--text-primary)", cursor: "pointer",
-            transition: "all 0.2s"
+            transition: "all 0.2s", whiteSpace: "nowrap", flexShrink: 0
           }}
           onMouseOver={e => e.currentTarget.style.background = "rgba(255,70,70,0.2)"}
           onMouseOut={e => e.currentTarget.style.background = "var(--button-bg)"}
