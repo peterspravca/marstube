@@ -80,7 +80,7 @@ if ($action !== 'version') {
 
 
 // Smaž súbory staršie ako 1 hodinu (3600 sekúnd)
-$files = array_merge(glob('*_video.mp4'), glob('*_audio.m4a'), glob('*_audio.mp3'));
+$files = array_merge(glob('*.mp4'), glob('*.m4a'), glob('*.mp3'));
 $now = time();
 foreach ($files as $file) {
     if (is_file($file)) {
