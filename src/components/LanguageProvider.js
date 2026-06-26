@@ -36,6 +36,12 @@ const translations = {
     "auth.verifyBtn": "Overiť",
     "auth.sendResetBtn": "Zaslať odkaz na obnovu",
     "auth.backToLogin": "Späť na prihlásenie",
+    "auth.verifyCodePlaceholder": "Zadajte 6-miestny kód z e-mailu",
+    "auth.loading": "Čakajte...",
+    "auth.verifyAndLogin": "Overiť a prihlásiť",
+    "auth.register": "Zaregistrovať sa",
+    "auth.hidePassword": "Skryť heslo",
+    "auth.showPassword": "Zobraziť heslo",
     "playlist.title": "Tvoj Playlist",
     "playlist.myMusic": "Moja hudba",
     "playlist.add": "Pridať playlist",
@@ -170,6 +176,12 @@ const translations = {
     "auth.resetPasswordTitleBold": "Recovery",
     "auth.resetPasswordBtn": "Reset password",
     "auth.loadingWait": "Please wait...",
+    "auth.verifyCodePlaceholder": "Enter the 6-digit code from your email",
+    "auth.loading": "Please wait...",
+    "auth.verifyAndLogin": "Verify and login",
+    "auth.register": "Register",
+    "auth.hidePassword": "Hide password",
+    "auth.showPassword": "Show password",
   }
 };
 
