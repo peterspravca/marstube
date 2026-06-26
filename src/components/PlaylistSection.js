@@ -317,7 +317,7 @@ export default function PlaylistSection() {
               </svg>
             </div>
             <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
-              <strong style={{ color: "var(--accent-primary)" }}>Viete, že...?</strong> Uložte si obľúbené videá a playlisty natrvalo. Stačí sa zaregistrovať.
+              <strong style={{ color: "var(--accent-primary)" }}>{t("playlist.registerBannerBold")}</strong>{t("playlist.registerBannerText")}
             </p>
           </div>
           <button 
@@ -334,7 +334,7 @@ export default function PlaylistSection() {
               whiteSpace: "nowrap"
             }}
           >
-            Zaregistrovať sa
+            {t("playlist.registerBtn")}
           </button>
         </div>
       )}
@@ -350,7 +350,7 @@ export default function PlaylistSection() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
         <h2 style={{ fontSize: "2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-          Moja hudba
+          {t("playlist.myMusic")}
         </h2>
         <button
           onClick={() => {
@@ -376,11 +376,11 @@ export default function PlaylistSection() {
           }}
         >
           {!isLoggedIn ? (
-            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Pridať playlist</>
+            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> {t("playlist.add")}</>
           ) : showAddForm ? (
-            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Zavrieť</>
+            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> {t("playlist.close")}</>
           ) : (
-            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Pridať playlist</>
+            <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> {t("playlist.add")}</>
           )}
         </button>
       </div>
@@ -396,12 +396,12 @@ export default function PlaylistSection() {
           }}
         >
           <p style={{ color: "var(--text-secondary)", marginBottom: "1rem", fontSize: "0.95rem" }}>
-            Vložte ID alebo odkaz na YouTube playlist:
+            {t("playlist.addPrompt")}
           </p>
           <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
             <input
               type="text"
-              placeholder="Napr. PLxxx... alebo celý YouTube odkaz"
+              placeholder={t("playlist.addPlaceholder")}
               value={addInput}
               onChange={(e) => setAddInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddPlaylist()}
@@ -430,7 +430,7 @@ export default function PlaylistSection() {
                 transition: "transform 0.2s",
               }}
             >
-              Pridať
+              {t("playlist.addBtn")}
             </button>
           </div>
         </div>
