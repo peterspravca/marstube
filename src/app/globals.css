@@ -248,6 +248,8 @@ a {
     width: 100%;
     margin-bottom: 1.5rem;
     order: 1;
+    flex-wrap: nowrap;
+    gap: 0.6rem;
   }
   .home-logo-title {
     gap: 0.5rem;
