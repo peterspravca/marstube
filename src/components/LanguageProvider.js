@@ -100,10 +100,7 @@ export function LanguageProvider({ children }) {
     if (savedLang && translations[savedLang]) {
       setLanguage(savedLang);
     } else {
-      const browserLang = navigator.language || navigator.userLanguage;
-      if (browserLang && browserLang.toLowerCase().startsWith("en")) {
-        setLanguage("en");
-      }
+      setLanguage("sk");
     }
     setMounted(true);
   }, []);
