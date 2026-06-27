@@ -197,7 +197,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
     const checkAndDownload = async () => {
       setLoadingState("checking");
-      setDownloadProgress("Kontrolujem stav súboru na serveri...");
+      setDownloadProgress(t("player.checkingStatus"));
       setDownloadError("");
       setStreamUrl("");
 
@@ -224,7 +224,7 @@ export default function VideoPlayer({ streamData, nextVideoUrl, prevVideoUrl }) 
 
         // 3. Spustíme sťahovanie zo servera marso.sk na FTP s príslušným klientskym UA
         setLoadingState("downloading");
-        setDownloadProgress("Pripravujem prehrávanie (sťahujem súbor na server, zvyčajne to trvá 2-5 sekúnd)...");
+        setDownloadProgress(t("player.preparingDownload"));
 
         const dlRes = await fetch(`https://marso.sk/play/download.php?action=download&filename=${filename}&url=${encodeURIComponent(sourceUrl)}&client=${sourceClient}&ua=${encodeURIComponent(sourceUA || '')}&token=MARSTUBE_API_SECRET_2026`);
         const dlData = await dlRes.json();
